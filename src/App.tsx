@@ -1,15 +1,20 @@
+import { collection, addDoc, query, getDocs, deleteDoc, doc } from "firebase/firestore";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger, } from "@/components/ui/accordion"
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Login from "./components/Login"
-import Post from "./components/Post"
 import AddJob from "./components/AddJob"
 import { FilePenLine, Trash2 } from "lucide-react"
 import EditJob from "./components/EditJob"
 import { ScrollArea } from "@/components/ui/scroll-area"
+import { Separator } from "./components/ui/separator"
+import { db } from "./lib/firebase";
+import { Button } from "./components/ui/button";
+import { toast } from "./components/ui/use-toast";
+import Post from "./components/Post";
 
 
 export interface Job {
-  id: number;
+  id: string;
   title: string;
   description: string;
   positionsAvailable: number;
@@ -19,69 +24,81 @@ export interface Job {
 }
 
 export default function App() {
-  const [data, setData] = useState<Job[]>([
-    {
-      id: 1,
-      title: "Kebab maker",
-      description: "Become a kebab seller here, please apply we need youegwegegegg..",
-      positionsAvailable: 14,
-      totalPositions: 20,
-      surveysSubmitted: 20,
-      totalSurveys: 50
-    },
-    {
-      id: 2,
-      title: "Pizza Chef",
-      description: "Join our team as a pizza chef, apply now we need pizzalovers..",
-      positionsAvailable: 5,
-      totalPositions: 20,
-      surveysSubmitted: 15,
-      totalSurveys: 50
-    },
-    // ... add other job posts with unique ids
-    {
-      id: 15,
-      title: "Pastry Chef",
-      description: "Join our team as a pastry chef, apply now we need dessertlovers..",
-      positionsAvailable: 6,
-      totalPositions: 40,
-      surveysSubmitted: 50,
-      totalSurveys: 50
-    }
-  ]);
+  const [data, setData] = useState<Job[]>([]);
 
   const [admin, setAdmin] = useState(false)
 
-  function deleteJob(id: number) {
-    setData((prevData) => prevData.filter((job) => job.id !== id));
+  async function deleteJob(id: string) {
+    try {
+      await deleteDoc(doc(db, "posts", id));
+      setData((prevData) => prevData.filter((job) => job.id !== id));
+      toast({
+        title: "Job deleted successfully.",
+        description: "The job has been deleted from the database.",
+      })
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Uh oh! Something went wrong.",
+        description: "There was a problem with your request.",
+      })
+    }
   }
+
+  useEffect(() => {
+    read()
+  }, [])
+
+
+
+  async function read() {
+    try {
+      const q = query(collection(db, "posts"))
+      const querySnapshot = await getDocs(q);
+      const posts: Job[] = [];
+      querySnapshot.forEach((doc) => {
+        // @ts-ignore
+        posts.push({ id: doc.id, ...doc.data() });
+      });
+      setData(posts);
+      console.log(posts);
+    } catch (error) {
+      console.log(error);
+      toast({
+        variant: "destructive",
+        title: "Uh oh! Something went wrong.",
+        description: "There was a problem with your request.",
+      })
+    }
+  }
+
   return (
     <div className="flex flex-col items-center justify-center h-screen">
       <div className="w-1/2 h-1/2">
 
-      <div className=" mb-2">
+        <div className=" mb-2">
+          {!admin && <Login setAdmin={setAdmin} />}
+          {admin && <AddJob setData={setData} />}
+        </div>
+        <ScrollArea className=" rounded-md border p-4 h-[400px]">
+          {data.length === 0 && <div className="text-center m-5" >No jobs found</div>}
 
-      {!admin && <Login setAdmin={setAdmin} />}
-      {admin && <AddJob setData={setData} />}
-      </div>
-      <ScrollArea className=" rounded-md border p-4">
-        {data.length === 0 && <div className="text-center m-5" >No jobs found</div>}
-        
-      <Accordion type="single" collapsible className=" overflow-auto flex flex-col gap-3" >
-        {data.map((item, index) => {
-          return (
-            <AccordionItem className="relative" value={`${index}`}>
+          <div className="overflow-auto flex flex-col justify-items-stretch gap-3" >
+            {data.map((item, index) => {
+              return (
+                <div className="relative" key={`${index}`}>
 
-              {admin && <div className="flex gap-2 absolute top-4 right-4 z-50">
-                <EditJob item={item} setData={setData} />
-                <Trash2 onClick={() => deleteJob(item.id)} className="hover:text-red-700 h-5 w-5" />
-              </div>}
+                  {admin && <div className="flex gap-2 absolute top-4 right-4 z-50">
+                    <EditJob item={item} setData={setData} />
+                    <Trash2 onClick={() => deleteJob(item.id)} className="hover:text-red-700 h-5 w-5" />
+                  </div>}
 
-              <Post item={item} />
-            </AccordionItem>
-          )
-        })}
-      </Accordion>
+                  <Post item={item} />
+                  <Separator className="" />
+                </div>
+              )
+            })}
+          </div>
         </ScrollArea>
       </div>
 

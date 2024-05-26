@@ -30,7 +30,7 @@ export default function Login({ setAdmin }: { setAdmin: (arg0: boolean) => void 
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="outline" className=" inline-flex gap-2" >Login <Lock size={20} /></Button>
+        <Button variant="outline" className=" inline-flex gap-2" >Add Job <Lock size={20} /></Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>

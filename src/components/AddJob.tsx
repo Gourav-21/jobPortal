@@ -12,9 +12,11 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { useToast } from "./ui/use-toast"
-import { Job } from "@/App"
 import { LockOpen } from "lucide-react"
 import { Textarea } from "./ui/textarea"
+import { addDoc, collection } from "firebase/firestore"
+import { db } from "@/lib/firebase"
+import { Job } from "@/App"
 
 
 
@@ -26,23 +28,40 @@ export default function AddJob({ setData }: { setData: React.Dispatch<React.SetS
   const [totalPositions, setTotalPositions] = useState(0);
   const [totalSurveys, setTotalSurveys] = useState(0);
 
-  function add(event: React.FormEvent<HTMLFormElement>) {
+  async function add(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setData((prevData) => [
-      { title, description, totalPositions, totalSurveys, id: prevData.length + 1,positionsAvailable:totalPositions, surveysSubmitted:0 },
-      ...prevData, 
-    ]);
-    // Clear the form after adding
-    
-    setTitle("");
-    setDescription("");
-    setTotalPositions(0);
-    setTotalSurveys(0);
 
-    toast({
-      title: "Job added successfully!",
-      description: "Your job has been added to the job list.",
-    })
+    try {
+      const docRef = await addDoc(collection(db, "posts"), {
+        title,description,totalPositions,totalSurveys,positionsAvailable: totalPositions, surveysSubmitted: 0
+      });
+      
+      setData((prevData) => [
+        { title, description, totalPositions, totalSurveys, id: docRef.id, positionsAvailable: totalPositions, surveysSubmitted: 0 },
+        ...prevData,
+      ]);
+  
+      setTitle("");
+      setDescription("");
+      setTotalPositions(0);
+      setTotalSurveys(0);
+  
+      toast({
+        title: "Job added successfully!",
+        description: "Your job has been added to the job list.",
+      })
+      setOpen(false);
+    } catch (error) {
+      console.error("Error getting posts:", error);
+  
+      toast({
+        variant: "destructive",
+        title: "Uh oh! Something went wrong.",
+        description: "There was a problem with your request.",
+      })
+      return
+    }
+
   }
 
   return (
@@ -93,17 +112,17 @@ export default function AddJob({ setData }: { setData: React.Dispatch<React.SetS
             />
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="totalSurveys">Total Surveys</Label>
-                <Input
-                  className="col-span-3"
-                  type="number"
-                  id="totalSurveys"
-                  value={totalSurveys}
-                  min={1}
-                  onChange={(e) => setTotalSurveys(Number(e.target.value))}
-                  required
-                />
-              </div>
+            <Label htmlFor="totalSurveys">Total Surveys</Label>
+            <Input
+              className="col-span-3"
+              type="number"
+              id="totalSurveys"
+              value={totalSurveys}
+              min={1}
+              onChange={(e) => setTotalSurveys(Number(e.target.value))}
+              required
+            />
+          </div>
           <DialogFooter>
             <Button type="submit" className="w-full">Add Job</Button>
           </DialogFooter>

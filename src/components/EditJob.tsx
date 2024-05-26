@@ -15,6 +15,8 @@ import { useToast } from "./ui/use-toast"
 import { Job } from "@/App"
 import { FilePenLine } from "lucide-react"
 import { Textarea } from "./ui/textarea"
+import { addDoc, collection, doc, setDoc } from "firebase/firestore"
+import { db } from "@/lib/firebase"
 
 
 
@@ -27,8 +29,11 @@ export default function EditJob({ item, setData }: { item: Job, setData: React.D
   const [positionsAvailable, setPositionsAvailable] = useState(item.positionsAvailable);
   const [totalSurveys, setTotalSurveys] = useState(item.totalSurveys);
 
-  function edit(event: React.FormEvent<HTMLFormElement>) {
+  async function edit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    const docRef = await setDoc(doc(db, "posts", item.id), {
+      title,description,totalPositions,totalSurveys,positionsAvailable,surveysSubmitted:item?.surveysSubmitted
+    });
     setData((prevData) => prevData.map((job) => job.id === item.id ? { ...job, title, description,positionsAvailable, totalPositions, totalSurveys } : job));
     setOpen(false);
     toast({
@@ -36,9 +41,6 @@ export default function EditJob({ item, setData }: { item: Job, setData: React.D
       description: "Your job has been edited.",
     })
   }
-
-
-  
 
   return (
     <Dialog onOpenChange={setOpen} open={open}>
