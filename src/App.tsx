@@ -1,14 +1,12 @@
-import { collection, addDoc, query, getDocs, deleteDoc, doc } from "firebase/firestore";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger, } from "@/components/ui/accordion"
+import { collection,  query, getDocs, deleteDoc, doc } from "firebase/firestore";
 import { useEffect, useState } from 'react'
 import Login from "./components/Login"
 import AddJob from "./components/AddJob"
-import { FilePenLine, Trash2 } from "lucide-react"
+import { Trash2 } from "lucide-react"
 import EditJob from "./components/EditJob"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Separator } from "./components/ui/separator"
 import { db } from "./lib/firebase";
-import { Button } from "./components/ui/button";
 import { toast } from "./components/ui/use-toast";
 import Post from "./components/Post";
 

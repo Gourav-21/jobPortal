@@ -15,7 +15,7 @@ import { useToast } from "./ui/use-toast"
 import { Job } from "@/App"
 import { FilePenLine } from "lucide-react"
 import { Textarea } from "./ui/textarea"
-import { addDoc, collection, doc, setDoc } from "firebase/firestore"
+import {  doc, setDoc } from "firebase/firestore"
 import { db } from "@/lib/firebase"
 
 
@@ -31,7 +31,7 @@ export default function EditJob({ item, setData }: { item: Job, setData: React.D
 
   async function edit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    const docRef = await setDoc(doc(db, "posts", item.id), {
+    await setDoc(doc(db, "posts", item.id), {
       title,description,totalPositions,totalSurveys,positionsAvailable,surveysSubmitted:item?.surveysSubmitted
     });
     setData((prevData) => prevData.map((job) => job.id === item.id ? { ...job, title, description,positionsAvailable, totalPositions, totalSurveys } : job));
