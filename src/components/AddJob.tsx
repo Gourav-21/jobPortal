@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { useState } from "react"
+import { ChangeEvent, useState } from "react"
 import {
   Dialog,
   DialogContent,
@@ -15,8 +15,11 @@ import { useToast } from "./ui/use-toast"
 import { LockOpen } from "lucide-react"
 import { Textarea } from "./ui/textarea"
 import { addDoc, collection } from "firebase/firestore"
-import { db } from "@/lib/firebase"
+import { db, storage } from "@/lib/firebase"
 import { Job } from "@/App"
+import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
+import { Progress } from "./ui/progress"
+
 
 
 
@@ -24,6 +27,8 @@ export default function AddJob({ setData }: { setData: React.Dispatch<React.SetS
   const [open, setOpen] = useState(false)
   const { toast } = useToast()
   const [title, setTitle] = useState("");
+  const [file, setFile] = useState<File | null>();
+  const [progress, setProgress] = useState(0);
   const [description, setDescription] = useState("");
   const [totalPositions, setTotalPositions] = useState(0);
   const [totalSurveys, setTotalSurveys] = useState(0);
@@ -33,19 +38,20 @@ export default function AddJob({ setData }: { setData: React.Dispatch<React.SetS
 
     try {
       const docRef = await addDoc(collection(db, "posts"), {
-        title,description,totalPositions,totalSurveys,positionsAvailable: totalPositions, surveysSubmitted: 0
+        title, description, totalPositions, totalSurveys, positionsAvailable: totalPositions, surveysSubmitted: 0
       });
-      
+
       setData((prevData) => [
         { title, description, totalPositions, totalSurveys, id: docRef.id, positionsAvailable: totalPositions, surveysSubmitted: 0 },
         ...prevData,
       ]);
-  
+
       setTitle("");
       setDescription("");
       setTotalPositions(0);
       setTotalSurveys(0);
-  
+      setFile(null);
+
       toast({
         title: "Job added successfully!",
         description: "Your job has been added to the job list.",
@@ -53,7 +59,7 @@ export default function AddJob({ setData }: { setData: React.Dispatch<React.SetS
       setOpen(false);
     } catch (error) {
       console.error("Error getting posts:", error);
-  
+
       toast({
         variant: "destructive",
         title: "Uh oh! Something went wrong.",
@@ -63,6 +69,134 @@ export default function AddJob({ setData }: { setData: React.Dispatch<React.SetS
     }
 
   }
+
+  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      if (e.target.files.length > 1) {
+        toast({
+          variant: "destructive",
+          title: "Uh oh!",
+          description: "You can only upload one file at a time.",
+        })
+        setFile(null);
+        return
+      }
+      if (e.target.files[0].size > 1024 * 1024 * 5) {
+        toast({
+          variant: "destructive",
+          title: "Uh oh!",
+          description: "Your file should be less than 5MB",
+        })
+        setFile(null);
+        return
+      }
+      console.log("it ran");
+      setFile(e.target.files[0]);
+    }
+  };
+
+
+  const handleUpload = () => {
+    if (!file) {
+      return;
+    }
+
+    const storageRef = ref(storage, `logo/${file?.name}`);
+
+
+    const uploadTask = uploadBytesResumable(storageRef, file)
+
+    uploadTask.on('state_changed',
+      (snapshot) => {
+        // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
+        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        setProgress(progress);
+        console.log('Upload is ' + progress + '% done');
+        switch (snapshot.state) {
+          case 'paused':
+            console.log('Upload is paused');
+            break;
+          case 'running':
+            console.log('Upload is running');
+            break;
+        }
+      },
+      (error) => {
+        // A full list of error codes is available at
+        // https://firebase.google.com/docs/storage/web/handle-errors
+        switch (error.code) {
+          case 'storage/unauthorized':
+            // User doesn't have permission to access the object
+            break;
+          case 'storage/canceled':
+            // User canceled the upload
+            break;
+
+          // ...
+
+          case 'storage/unknown':
+            // Unknown error occurred, inspect error.serverResponse
+            break;
+        }
+      },
+      () => {
+        // Upload completed successfully, now we can get the download URL
+        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+          console.log('File available at', downloadURL);
+        });
+      }
+    );
+
+  };
+
+
+
+  // function uploadFile() {
+  //   // Upload file and metadata to the object 'images/mountains.jpg'
+  //   const storageRef = ref(storage, 'images/' + file.name);
+  //   const uploadTask = uploadBytesResumable(storageRef, file, metadata);
+  //   // Listen for state changes, errors, and completion of the upload.
+  //   uploadTask.on('state_changed',
+  //     (snapshot) => {
+  //       // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
+  //       const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+  //       console.log('Upload is ' + progress + '% done');
+  //       switch (snapshot.state) {
+  //         case 'paused':
+  //           console.log('Upload is paused');
+  //           break;
+  //         case 'running':
+  //           console.log('Upload is running');
+  //           break;
+  //       }
+  //     },
+  //     (error) => {
+  //       // A full list of error codes is available at
+  //       // https://firebase.google.com/docs/storage/web/handle-errors
+  //       switch (error.code) {
+  //         case 'storage/unauthorized':
+  //           // User doesn't have permission to access the object
+  //           break;
+  //         case 'storage/canceled':
+  //           // User canceled the upload
+  //           break;
+
+  //         // ...
+
+  //         case 'storage/unknown':
+  //           // Unknown error occurred, inspect error.serverResponse
+  //           break;
+  //       }
+  //     },
+  //     () => {
+  //       // Upload completed successfully, now we can get the download URL
+  //       getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+  //         console.log('File available at', downloadURL);
+  //       });
+  //     }
+  //   );
+
+  // }
 
   return (
     <Dialog onOpenChange={setOpen} open={open}>
@@ -127,6 +261,23 @@ export default function AddJob({ setData }: { setData: React.Dispatch<React.SetS
             <Button type="submit" className="w-full">Add Job</Button>
           </DialogFooter>
         </form>
+        <div className="grid gap-4">
+          {file && <div>
+            {/* Display the selected image */}
+            <img
+              alt="not found"
+              width={"250px"}
+              src={URL.createObjectURL(file)}
+            />
+            <br /> <br />
+            {/* Button to remove the selected image */}
+            <button onClick={() => setFile(null)}>Remove</button>
+          </div> }
+          <Label htmlFor="logo">Logo</Label>
+          <Input id="logo" type="file" onChange={handleFileChange} accept="image/png, image/jpeg" placeholder="logo " required />
+          <Progress value={progress} className="" />
+          <Button className="w-full" onClick={handleUpload}>Upload</Button>
+        </div>
       </DialogContent>
     </Dialog>
   )

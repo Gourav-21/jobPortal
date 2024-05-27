@@ -24,7 +24,7 @@ export interface Job {
 export default function App() {
   const [data, setData] = useState<Job[]>([]);
 
-  const [admin, setAdmin] = useState(false)
+  const [admin, setAdmin] = useState(true)
 
   async function deleteJob(id: string) {
     try {
