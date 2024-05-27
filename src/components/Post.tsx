@@ -22,6 +22,7 @@ import { Progress } from "./ui/progress"
 
 export default function Post({ item }: { item: Job }) {
   const { toast } = useToast()
+  console.log(item)
 
   const [file, setFile] = useState<File | null>();
   const [progress, setProgress] = useState(0);
@@ -46,7 +47,6 @@ export default function Post({ item }: { item: Job }) {
         setFile(null);
         return
       }
-      console.log("it ran");
       setFile(e.target.files[0]);
     }
   };
@@ -108,7 +108,8 @@ export default function Post({ item }: { item: Job }) {
       <DialogTrigger className="text-left hover:bg-muted mb-3 p-2 rounded-md w-full ">
         <div className="grid grid-cols-7 gap-3 w-full text-bold">
           <div className="col-span-1 flex justify-center items-center  bg-purple-700">
-            <Building2 color="white" size={30} />
+            {item.logo?.length > 1 ?   <img src={item.logo} alt="" /> : <Building2 color="white" size={30} />}
+            {/* <Building2 color="white" size={30} /> */}
             {/* <Avatar>
               <AvatarImage src="" />
               <AvatarFallback></AvatarFallback>

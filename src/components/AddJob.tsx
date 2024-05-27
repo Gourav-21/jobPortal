@@ -20,14 +20,12 @@ import { Job } from "@/App"
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { Progress } from "./ui/progress"
 
-
-
-
 export default function AddJob({ setData }: { setData: React.Dispatch<React.SetStateAction<Job[]>> }) {
   const [open, setOpen] = useState(false)
   const { toast } = useToast()
   const [title, setTitle] = useState("");
   const [file, setFile] = useState<File | null>();
+  const [logo, setLogo] = useState("");
   const [progress, setProgress] = useState(0);
   const [description, setDescription] = useState("");
   const [totalPositions, setTotalPositions] = useState(0);
@@ -37,12 +35,16 @@ export default function AddJob({ setData }: { setData: React.Dispatch<React.SetS
     event.preventDefault();
 
     try {
+      await handleUpload()
+
+      console.log(logo)
+      
       const docRef = await addDoc(collection(db, "posts"), {
-        title, description, totalPositions, totalSurveys, positionsAvailable: totalPositions, surveysSubmitted: 0
+        title, description, totalPositions, totalSurveys, positionsAvailable: totalPositions, surveysSubmitted: 0, logo
       });
 
       setData((prevData) => [
-        { title, description, totalPositions, totalSurveys, id: docRef.id, positionsAvailable: totalPositions, surveysSubmitted: 0 },
+        { title, logo, description, totalPositions, totalSurveys, id: docRef.id, positionsAvailable: totalPositions, surveysSubmitted: 0 },
         ...prevData,
       ]);
 
@@ -90,7 +92,6 @@ export default function AddJob({ setData }: { setData: React.Dispatch<React.SetS
         setFile(null);
         return
       }
-      console.log("it ran");
       setFile(e.target.files[0]);
     }
   };
@@ -98,12 +99,10 @@ export default function AddJob({ setData }: { setData: React.Dispatch<React.SetS
 
   const handleUpload = () => {
     if (!file) {
-      return;
+      return ;
     }
 
     const storageRef = ref(storage, `logo/${file?.name}`);
-
-
     const uploadTask = uploadBytesResumable(storageRef, file)
 
     uploadTask.on('state_changed',
@@ -142,61 +141,12 @@ export default function AddJob({ setData }: { setData: React.Dispatch<React.SetS
       () => {
         // Upload completed successfully, now we can get the download URL
         getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-          console.log('File available at', downloadURL);
+          setLogo(downloadURL);
         });
       }
     );
 
   };
-
-
-
-  // function uploadFile() {
-  //   // Upload file and metadata to the object 'images/mountains.jpg'
-  //   const storageRef = ref(storage, 'images/' + file.name);
-  //   const uploadTask = uploadBytesResumable(storageRef, file, metadata);
-  //   // Listen for state changes, errors, and completion of the upload.
-  //   uploadTask.on('state_changed',
-  //     (snapshot) => {
-  //       // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
-  //       const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-  //       console.log('Upload is ' + progress + '% done');
-  //       switch (snapshot.state) {
-  //         case 'paused':
-  //           console.log('Upload is paused');
-  //           break;
-  //         case 'running':
-  //           console.log('Upload is running');
-  //           break;
-  //       }
-  //     },
-  //     (error) => {
-  //       // A full list of error codes is available at
-  //       // https://firebase.google.com/docs/storage/web/handle-errors
-  //       switch (error.code) {
-  //         case 'storage/unauthorized':
-  //           // User doesn't have permission to access the object
-  //           break;
-  //         case 'storage/canceled':
-  //           // User canceled the upload
-  //           break;
-
-  //         // ...
-
-  //         case 'storage/unknown':
-  //           // Unknown error occurred, inspect error.serverResponse
-  //           break;
-  //       }
-  //     },
-  //     () => {
-  //       // Upload completed successfully, now we can get the download URL
-  //       getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-  //         console.log('File available at', downloadURL);
-  //       });
-  //     }
-  //   );
-
-  // }
 
   return (
     <Dialog onOpenChange={setOpen} open={open}>
@@ -257,27 +207,22 @@ export default function AddJob({ setData }: { setData: React.Dispatch<React.SetS
               required
             />
           </div>
+          {file && <div>
+              <img
+                alt="not found"
+                width={"20px"}
+                src={URL.createObjectURL(file)}
+              /><Button onClick={() => setFile(null)}>Remove</Button>
+            </div>}
+          <div className="grid grid-cols-4 items-center gap-4 w-full">
+            <Label htmlFor="logo">Logo</Label>
+            <Input id="logo" className="col-span-3" type="file" onChange={handleFileChange} accept="image/png, image/jpeg" placeholder="logo " />
+          </div>
+          <Progress value={progress} className="" />
           <DialogFooter>
             <Button type="submit" className="w-full">Add Job</Button>
           </DialogFooter>
         </form>
-        <div className="grid gap-4">
-          {file && <div>
-            {/* Display the selected image */}
-            <img
-              alt="not found"
-              width={"250px"}
-              src={URL.createObjectURL(file)}
-            />
-            <br /> <br />
-            {/* Button to remove the selected image */}
-            <button onClick={() => setFile(null)}>Remove</button>
-          </div> }
-          <Label htmlFor="logo">Logo</Label>
-          <Input id="logo" type="file" onChange={handleFileChange} accept="image/png, image/jpeg" placeholder="logo " required />
-          <Progress value={progress} className="" />
-          <Button className="w-full" onClick={handleUpload}>Upload</Button>
-        </div>
       </DialogContent>
     </Dialog>
   )

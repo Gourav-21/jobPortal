@@ -19,6 +19,7 @@ export interface Job {
   totalPositions: number;
   surveysSubmitted: number;
   totalSurveys: number;
+  logo:string
 }
 
 export default function App() {
