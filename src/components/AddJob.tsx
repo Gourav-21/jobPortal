@@ -12,7 +12,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { useToast } from "./ui/use-toast"
-import { LockOpen } from "lucide-react"
+import { Building2, LockOpen } from "lucide-react"
 import { Textarea } from "./ui/textarea"
 import { addDoc, collection } from "firebase/firestore"
 import { db, storage } from "@/lib/firebase"
@@ -24,6 +24,9 @@ export default function AddJob({ setData }: { setData: React.Dispatch<React.SetS
   const [open, setOpen] = useState(false)
   const { toast } = useToast()
   const [title, setTitle] = useState("");
+  const [company, setCompany] = useState("");
+  const [phone, setPhone] = useState<number | undefined>();
+  const [email, setEmail] = useState("");
   const [file, setFile] = useState<File | null>();
   const [logo, setLogo] = useState("");
   const [progress, setProgress] = useState(0);
@@ -38,13 +41,13 @@ export default function AddJob({ setData }: { setData: React.Dispatch<React.SetS
       await handleUpload()
 
       console.log(logo)
-      
+
       const docRef = await addDoc(collection(db, "posts"), {
-        title, description, totalPositions, totalSurveys, positionsAvailable: totalPositions, surveysSubmitted: 0, logo
+        title, description, totalPositions, totalSurveys, positionsAvailable: totalPositions, surveysSubmitted: 0, logo, company, phone, email,
       });
 
       setData((prevData) => [
-        { title, logo, description, totalPositions, totalSurveys, id: docRef.id, positionsAvailable: totalPositions, surveysSubmitted: 0 },
+        { title, logo, description, totalPositions, totalSurveys, id: docRef.id, positionsAvailable: totalPositions, surveysSubmitted: 0, company, phone, email },
         ...prevData,
       ]);
 
@@ -53,6 +56,12 @@ export default function AddJob({ setData }: { setData: React.Dispatch<React.SetS
       setTotalPositions(0);
       setTotalSurveys(0);
       setFile(null);
+      setLogo("");
+      setProgress(0);
+      setCompany("");
+      setPhone(1234567890);
+      setEmail("");
+
 
       toast({
         title: "Job added successfully!",
@@ -99,7 +108,7 @@ export default function AddJob({ setData }: { setData: React.Dispatch<React.SetS
 
   const handleUpload = () => {
     if (!file) {
-      return ;
+      return;
     }
 
     const storageRef = ref(storage, `logo/${file?.name}`);
@@ -153,71 +162,123 @@ export default function AddJob({ setData }: { setData: React.Dispatch<React.SetS
       <DialogTrigger asChild>
         <Button variant="outline" className="inline-flex items-center gap-2">Add job <LockOpen size={20} /></Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[825px]">
         <DialogHeader>
           <DialogTitle> Add New Job Post </DialogTitle>
           <DialogDescription>
             Enter your job details below to add to the job list.
           </DialogDescription>
         </DialogHeader>
-        <form onSubmit={add} className="grid gap-4 py-4">
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="title">Title</Label>
-            <Input
-              className="col-span-3"
-              id="title"
-              value={title}
-              onChange={e => setTitle(e.target.value)}
-              placeholder="Job title"
-              required
-            />
+        <form onSubmit={add} className="grid grid-cols-1 gap-4">
+          <div className="grid grid-cols-2 items-center gap-4">
+
+
+            <div className="grid cols-span-4 items-center gap-4">
+              <div className="grid grid-cols-4 items-center gap-4 w-full">
+                <div className="col-span-1 flex justify-center items-center w-20 h-20 bg-purple-700">
+                  {file != null ? (
+                    <>
+                      <img src={URL.createObjectURL(file)} className="w-full h-full object-cover" alt="" />
+                    </>
+                  ) : <Building2 color="white" size={30} />}
+                </div>
+                <div className="col-span-3 grid gap-2" >
+                  <Label htmlFor="logo">Logo</Label>
+                  <div className="flex gap-2">
+
+                  <Input id="logo" className="col-span-3" type="file" onChange={handleFileChange} accept="image/png, image/jpeg" placeholder="logo " />
+                 {file && <Button type="button" onClick={() => setFile(null)}>Remove</Button>}
+                  </div>
+                </div>
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="company">Company</Label>
+                <Input
+                  className="col-span-3"
+                  id="company"
+                  value={company}
+                  onChange={e => setCompany(e.target.value)}
+                  placeholder="Company"
+                  required
+                />
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="phone">phone</Label>
+                <Input
+                  className="col-span-3"
+                  id="phone"
+                  type="number"
+                  value={phone}
+                  onChange={e => setPhone(Number(e.target.value))}
+                  placeholder="1234242424"
+                  required
+                />
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="email">email</Label>
+                <Input
+                  className="col-span-3"
+                  id="email"
+                  value={email}
+                  onChange={e => setEmail(e.target.value)}
+                  placeholder="email"
+                  required
+                />
+              </div>
+
+            </div>
+            <div className="grid cols-span-4 items-center gap-4">
+
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="title">Title</Label>
+                <Input
+                  className="col-span-3"
+                  id="title"
+                  value={title}
+                  onChange={e => setTitle(e.target.value)}
+                  placeholder="Job title"
+                  required
+                />
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="description">Description</Label>
+                <Textarea
+                  className="col-span-3"
+                  id="description"
+                  value={description}
+                  onChange={e => setDescription(e.target.value)}
+                  placeholder="A job description goes here"
+                  required
+                />
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="totalPositions">Positions Available</Label>
+                <Input
+                  className="col-span-3"
+                  id="totalPositions"
+                  type="number"
+                  value={totalPositions}
+                  min={1}
+                  onChange={e => setTotalPositions(Number(e.target.value))}
+                  required
+                />
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="totalSurveys">Total Surveys</Label>
+                <Input
+                  className="col-span-3"
+                  type="number"
+                  id="totalSurveys"
+                  value={totalSurveys}
+                  min={1}
+                  onChange={(e) => setTotalSurveys(Number(e.target.value))}
+                  required
+                />
+              </div>
+            </div>
+
           </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="description">Description</Label>
-            <Textarea
-              className="col-span-3"
-              id="description"
-              value={description}
-              onChange={e => setDescription(e.target.value)}
-              placeholder="A job description goes here"
-              required
-            />
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="totalPositions">Positions Available</Label>
-            <Input
-              className="col-span-3"
-              id="totalPositions"
-              type="number"
-              value={totalPositions}
-              min={1}
-              onChange={e => setTotalPositions(Number(e.target.value))}
-              required
-            />
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="totalSurveys">Total Surveys</Label>
-            <Input
-              className="col-span-3"
-              type="number"
-              id="totalSurveys"
-              value={totalSurveys}
-              min={1}
-              onChange={(e) => setTotalSurveys(Number(e.target.value))}
-              required
-            />
-          </div>
-          {file && <div>
-              <img
-                alt="not found"
-                width={"20px"}
-                src={URL.createObjectURL(file)}
-              /><Button onClick={() => setFile(null)}>Remove</Button>
-            </div>}
-          <div className="grid grid-cols-4 items-center gap-4 w-full">
-            <Label htmlFor="logo">Logo</Label>
-            <Input id="logo" className="col-span-3" type="file" onChange={handleFileChange} accept="image/png, image/jpeg" placeholder="logo " />
-          </div>
+
           <Progress value={progress} className="" />
           <DialogFooter>
             <Button type="submit" className="w-full">Add Job</Button>
