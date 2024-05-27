@@ -1,6 +1,5 @@
 import { ChangeEvent } from "react"
-import { Building2, LockOpen } from "lucide-react"
-import { addDoc, collection } from "firebase/firestore"
+import { Building2 } from "lucide-react"
 import { storage } from "@/lib/firebase"
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { Progress } from "./ui/progress"

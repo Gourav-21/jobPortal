@@ -20,7 +20,6 @@ import { useToast } from "./ui/use-toast"
 import { storage } from "@/lib/firebase"
 import { Progress } from "./ui/progress"
 import emailjs from '@emailjs/browser';
-import { title } from "process"
 
 export default function Post({ item }: { item: Job }) {
   const { toast } = useToast()
