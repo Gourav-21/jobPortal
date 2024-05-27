@@ -105,6 +105,7 @@ export default function Post({ item }: { item: Job }) {
         // Upload completed successfully, now we can get the download URL
         getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
           setLink(downloadURL);
+          console.log('File available at', downloadURL);
         });
       }
     );
@@ -126,6 +127,9 @@ export default function Post({ item }: { item: Job }) {
           title: "Success!",
           description: "Your application has been submitted successfully.",
         })
+        setOpen(false)
+        setFile(null)
+        setProgress(0)
       })
       .catch((error) => {
         toast({
@@ -199,7 +203,7 @@ export default function Post({ item }: { item: Job }) {
                 </div>
                 <div className="flex flex-col space-y-1.5">
                   <Label htmlFor="resume">Attach Resume</Label>
-                  <Input id="resume" type="file" onChange={handleFileChange} accept="application/pdf" placeholder="Resume " required />
+                  <Input id="resume" type="file" onChange={handleFileChange} accept="application/pdf" placeholder="Resume" required />
                 </div>
                   <Progress value={progress} className="" />
                 <div className="flex justify-between ">
