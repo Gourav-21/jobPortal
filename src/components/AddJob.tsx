@@ -27,6 +27,7 @@ export default function AddJob({ setData }: { setData: React.Dispatch<React.SetS
   const [company, setCompany] = useState("");
   const [phone, setPhone] = useState<number | undefined>();
   const [email, setEmail] = useState("");
+  const [location, setLocation] = useState("");
   const [file, setFile] = useState<File | null>();
   const [logo, setLogo] = useState("");
   const [progress, setProgress] = useState(0);
@@ -43,11 +44,11 @@ export default function AddJob({ setData }: { setData: React.Dispatch<React.SetS
       console.log(logo)
 
       const docRef = await addDoc(collection(db, "posts"), {
-        title, description, totalPositions, totalSurveys, positionsAvailable: totalPositions, surveysSubmitted: 0, logo, company, phone, email,
+        title, description, totalPositions, totalSurveys, positionsAvailable: totalPositions, surveysSubmitted: 0, logo, company, phone, to_email:email, location
       });
 
       setData((prevData) => [
-        { title, logo, description, totalPositions, totalSurveys, id: docRef.id, positionsAvailable: totalPositions, surveysSubmitted: 0, company, phone, email },
+        { title, logo, description, totalPositions, totalSurveys, id: docRef.id, positionsAvailable: totalPositions, surveysSubmitted: 0, company, phone, to_email:email, location },
         ...prevData,
       ]);
 
@@ -59,7 +60,7 @@ export default function AddJob({ setData }: { setData: React.Dispatch<React.SetS
       setLogo("");
       setProgress(0);
       setCompany("");
-      setPhone(1234567890);
+      setPhone(undefined);
       setEmail("");
 
 
@@ -106,7 +107,7 @@ export default function AddJob({ setData }: { setData: React.Dispatch<React.SetS
   };
 
 
-  const handleUpload = () => {
+  const handleUpload = async () => {
     if (!file) {
       return;
     }
@@ -203,6 +204,17 @@ export default function AddJob({ setData }: { setData: React.Dispatch<React.SetS
                 />
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="location">location</Label>
+                <Input
+                  className="col-span-3"
+                  id="location"
+                  value={location}
+                  onChange={e => setLocation(e.target.value)}
+                  placeholder="location"
+                  required
+                />
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
                 <Label htmlFor="phone">phone</Label>
                 <Input
                   className="col-span-3"
@@ -245,6 +257,7 @@ export default function AddJob({ setData }: { setData: React.Dispatch<React.SetS
                 <Textarea
                   className="col-span-3"
                   id="description"
+                  rows={6}
                   value={description}
                   onChange={e => setDescription(e.target.value)}
                   placeholder="A job description goes here"

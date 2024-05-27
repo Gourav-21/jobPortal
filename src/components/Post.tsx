@@ -19,13 +19,21 @@ import { ChangeEvent, useState } from "react"
 import { useToast } from "./ui/use-toast"
 import { storage } from "@/lib/firebase"
 import { Progress } from "./ui/progress"
+import emailjs from '@emailjs/browser';
+import { title } from "process"
 
 export default function Post({ item }: { item: Job }) {
   const { toast } = useToast()
-  console.log(item)
 
   const [file, setFile] = useState<File | null>();
   const [progress, setProgress] = useState(0);
+
+  const [email, setEmail] = useState("");
+  const [name, setName] = useState("");
+  const [link, setLink] = useState("");
+  const [phone,setPhone] = useState<number| undefined>();
+  const [open, setOpen] = useState(false);
+
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -52,7 +60,7 @@ export default function Post({ item }: { item: Job }) {
   };
 
 
-  const handleUpload = () => {
+  const handleUpload = async () => {
     if (!file) {
       return;
     }
@@ -96,19 +104,46 @@ export default function Post({ item }: { item: Job }) {
       () => {
         // Upload completed successfully, now we can get the download URL
         getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-          console.log('File available at', downloadURL);
+          setLink(downloadURL);
         });
       }
     );
 
   };
 
+  async function submit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    await handleUpload()
+
+    emailjs.send("service_f0hbws8", "template_5h4l1dl", {
+      title: item.title,
+      to_email: item.to_email,
+      name,email,phone,link
+    }, "2OrzLXsspxRe5a38n")
+      .then((result) => {
+        console.log(result.text);
+        toast({
+          title: "Success!",
+          description: "Your application has been submitted successfully.",
+        })
+      })
+      .catch((error) => {
+        toast({
+          variant: "destructive",
+          title: "Uh oh! ",
+          description:error,
+        })
+        console.error('Error sending email:', error);
+      });  
+    }
+
+
   return (
-    <Dialog >
+    <Dialog open={open} onOpenChange={setOpen} >
       <DialogTrigger className="text-left hover:bg-muted mb-3 p-2 rounded-md w-full ">
         <div className="grid grid-cols-7 gap-3 w-full text-bold">
           <div className="col-span-1 flex justify-center items-center  w-20 h-20 bg-purple-700">
-            {item.logo?.length > 1 ?   <img src={item.logo} alt="" /> : <Building2 color="white" size={30} />}
+            {item.logo?.length > 1 ?   <img src={item.logo} alt="" className="w-full h-full object-cover" /> : <Building2 color="white" size={30} />}
             {/* <Building2 color="white" size={30} /> */}
             {/* <Avatar>
               <AvatarImage src="" />
@@ -136,7 +171,8 @@ export default function Post({ item }: { item: Job }) {
 
           <div className="col-span-6">
             <div className="col-span-1 flex justify-center items-center w-20 h-20  bg-purple-700">
-              <Building2 color="white" size={30} />
+            {item.logo?.length > 1 ?  <img src={item.logo} alt="" className="w-full h-full object-cover" /> : <Building2 color="white" size={30} />}
+
               {/* <Avatar>
               <AvatarImage src="" />
               <AvatarFallback></AvatarFallback>
@@ -147,19 +183,19 @@ export default function Post({ item }: { item: Job }) {
 
           </div>
           <div className="col-span-6">
-            <form>
+            <form onSubmit={submit}>
               <div className="grid w-full items-center gap-4">
                 <div className="flex flex-col space-y-1.5">
                   <Label htmlFor="name">Name</Label>
-                  <Input id="name" placeholder="Name " />
+                  <Input id="name" value={name} onChange={(e) => setName(e.target.value)} type="text" placeholder="Name " />
                 </div>
                 <div className="flex flex-col space-y-1.5">
                   <Label htmlFor="email">Email</Label>
-                  <Input id="email" type="email" placeholder="Email " />
+                  <Input id="email" value={email} onChange={(e) => setEmail(e.target.value)} type="email" placeholder="Email " />
                 </div>
                 <div className="flex flex-col space-y-1.5">
                   <Label htmlFor="phone">Phone</Label>
-                  <Input id="phone" type="number" placeholder="Phone " />
+                  <Input id="phone" value={phone} onChange={(e) => setPhone(Number(e.target.value))} type="number" placeholder="Phone " />
                 </div>
                 <div className="flex flex-col space-y-1.5">
                   <Label htmlFor="resume">Attach Resume</Label>
@@ -172,7 +208,7 @@ export default function Post({ item }: { item: Job }) {
                       Cancel
                     </Button>
                   </DialogClose>
-                  <Button type="button" className="bg-purple-700 text-white w-full ml-2 " onClick={handleUpload} >Submit</Button>
+                  <Button  className="bg-purple-700 text-white w-full ml-2 " >Submit</Button>
 
                 </div>
               </div>

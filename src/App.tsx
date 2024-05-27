@@ -22,7 +22,8 @@ export interface Job {
   logo:string,
   company:string,
   phone:number | undefined,
-  email:string
+  to_email:string
+  location:string
 }
 
 export default function App() {
