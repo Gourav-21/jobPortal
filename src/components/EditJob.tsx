@@ -24,113 +24,7 @@ import { doc, setDoc } from "firebase/firestore"
 import { db } from "@/lib/firebase"
 
 
-
-export function ditJob({ item, setData }: { item: Job, setData: React.Dispatch<React.SetStateAction<Job[]>> }) {
-  const [open, setOpen] = useState(false)
-  const { toast } = useToast()
-  const [title, setTitle] = useState(item.title);
-  const [description, setDescription] = useState(item.description);
-  const [totalPositions, setTotalPositions] = useState(item.totalPositions);
-  const [positionsAvailable, setPositionsAvailable] = useState(item.positionsAvailable);
-  const [totalSurveys, setTotalSurveys] = useState(item.totalSurveys);
-
-  async function edit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    await setDoc(doc(db, "posts", item.id), {
-      title, description, totalPositions, totalSurveys, positionsAvailable, surveysSubmitted: item?.surveysSubmitted
-    });
-    setData((prevData) => prevData.map((job) => job.id === item.id ? { ...job, title, description, positionsAvailable, totalPositions, totalSurveys } : job));
-    setOpen(false);
-    toast({
-      title: "Job edited successfully!",
-      description: "Your job has been edited.",
-    })
-  }
-
-  return (
-    <Dialog onOpenChange={setOpen} open={open}>
-      <DialogTrigger asChild>
-        <FilePenLine className="hover:text-green-700 h-5 w-5" />
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle> Edit Job Post  </DialogTitle>
-          <DialogDescription>
-            Edit the job post below
-          </DialogDescription>
-        </DialogHeader>
-        <form onSubmit={edit} className="grid gap-4 py-4">
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="title">Title</Label>
-            <Input
-              className="col-span-3"
-              id="title"
-              value={title}
-              onChange={e => setTitle(e.target.value)}
-              placeholder="Job title"
-              required
-            />
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="description">Description</Label>
-            <Textarea
-              className="col-span-3"
-              id="description"
-              value={description}
-              onChange={e => setDescription(e.target.value)}
-              placeholder="A job description goes here"
-              required
-            />
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="totalPositions">Total Positions</Label>
-            <Input
-              className="col-span-3"
-              id="totalPositions"
-              type="number"
-              value={totalPositions}
-              min={1}
-              onChange={e => setTotalPositions(Number(e.target.value))}
-              required
-            />
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="totalPositions">Positions Available</Label>
-            <Input
-              className="col-span-3"
-              id="totalPositions"
-              type="number"
-              value={positionsAvailable}
-              min={1}
-              onChange={e => setPositionsAvailable(Number(e.target.value))}
-              required
-            />
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="totalSurveys">total surveys</Label>
-            <Input
-              className="col-span-3"
-              type="number"
-              id="totalSurveys"
-              value={totalSurveys}
-              min={1}
-              onChange={(e) => setTotalSurveys(Number(e.target.value))}
-              required
-            />
-          </div>
-          <DialogFooter>
-            <Button type="submit" className="w-full">Save Edit</Button>
-          </DialogFooter>
-        </form>
-      </DialogContent>
-    </Dialog>
-  )
-}
-
-
-
 export default function EditJob({ item, setData }: { item: Job, setData: React.Dispatch<React.SetStateAction<Job[]>> }) {
-  console.log(item)
   const [open, setOpen] = useState(false)
   const { toast } = useToast()
   const [progress, setProgress] = useState(0);
@@ -150,21 +44,31 @@ export default function EditJob({ item, setData }: { item: Job, setData: React.D
     event.preventDefault();
 
     try {
-      if (file)
-        await handleUpload()
-
+      let uploadedLogo;
+      if (file) {
+        try {
+          uploadedLogo = await handleUpload() as string;
+        } catch (error) {
+          console.error("Error uploading file:", error);
+          // Handle upload error (e.g., display an error message to the user)
+          return; // Exit the function if upload fails
+        }
+      } else {
+        uploadedLogo = logo; // Use the existing logo URL if no file is selected
+      }
       console.log(logo)
 
-      await setDoc(doc(db, "posts", item.id), {
-        title, description, totalPositions, totalSurveys, positionsAvailable, surveysSubmitted: item?.surveysSubmitted, logo, company, phone, to_email: email, location
-      });
-      setData((prevData) => prevData.map((job) => job.id === item.id ? { ...job, title, description, positionsAvailable, totalPositions, totalSurveys, logo, company, phone, to_email: email, location } : job));
+        await setDoc(doc(db, "posts", item.id), {
+          title, description, totalPositions, totalSurveys, positionsAvailable, surveysSubmitted: item?.surveysSubmitted, logo: uploadedLogo, company, phone, to_email: email, location
+        });
+        setData((prevData) => prevData.map((job) => job.id === item.id ? { ...job, title, description, positionsAvailable, totalPositions, totalSurveys, logo: uploadedLogo, company, phone, to_email: email, location } : job));
 
-      setOpen(false);
-      toast({
-        title: "Job edited successfully!",
-        description: "Your job has been edited.",
-      })
+        setOpen(false);
+        toast({
+          title: "Job edited successfully!",
+          description: "Your job has been edited.",
+        })
+      
 
     } catch (error) {
       console.error("Error getting posts:", error);
@@ -206,7 +110,7 @@ export default function EditJob({ item, setData }: { item: Job, setData: React.D
 
   const handleUpload = async () => {
     if (!file) {
-      return;
+      return logo;
     }
 
     const storageRef = ref(storage, `logo/${file?.name}`);
@@ -245,14 +149,9 @@ export default function EditJob({ item, setData }: { item: Job, setData: React.D
             break;
         }
       },
-      () => {
-        // Upload completed successfully, now we can get the download URL
-        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-          setLogo(downloadURL);
-        });
-      }
     );
 
+    return await getDownloadURL(uploadTask.snapshot.ref);
   };
 
   return (
@@ -289,7 +188,7 @@ export default function EditJob({ item, setData }: { item: Job, setData: React.D
 
                     <Input id="logo" className="col-span-3" type="file" onChange={handleFileChange} accept="image/png, image/jpeg" placeholder="logo " />
                     {file && <Button type="button" onClick={() => setFile(null)}>Remove</Button>}
-                    {logo?.length > 1 && file==null && <Button type="button" onClick={() => setLogo("")}>Remove</Button>}
+                    {logo?.length > 1 && file == null && <Button type="button" onClick={() => setLogo("")}>Remove</Button>}
                   </div>
                 </div>
               </div>
