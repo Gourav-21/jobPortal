@@ -40,6 +40,7 @@ export default function EditJob({ item, setData }: { item: Job, setData: React.D
   const [positionsAvailable, setPositionsAvailable] = useState(item.positionsAvailable);
   const [totalSurveys, setTotalSurveys] = useState(item.totalSurveys);
 
+
   async function add(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
@@ -64,6 +65,8 @@ export default function EditJob({ item, setData }: { item: Job, setData: React.D
         setData((prevData) => prevData.map((job) => job.id === item.id ? { ...job, title, description, positionsAvailable, totalPositions, totalSurveys, logo: uploadedLogo, company, phone, to_email: email, location } : job));
 
         setOpen(false);
+        setProgress(0);
+
         toast({
           title: "Job edited successfully!",
           description: "Your job has been edited.",
@@ -304,7 +307,7 @@ export default function EditJob({ item, setData }: { item: Job, setData: React.D
 
           </div>
 
-          <Progress value={progress} className="" />
+         {progress > 0 && <Progress value={progress} className="" />}
           <DialogFooter>
             <Button type="submit" className="w-full">Add Job</Button>
           </DialogFooter>

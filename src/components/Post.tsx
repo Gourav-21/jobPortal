@@ -29,7 +29,6 @@ export default function Post({ item }: { item: Job }) {
 
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
-  const [link, setLink] = useState("");
   const [phone,setPhone] = useState<number| undefined>();
   const [open, setOpen] = useState(false);
 
@@ -61,7 +60,7 @@ export default function Post({ item }: { item: Job }) {
 
   const handleUpload = async () => {
     if (!file) {
-      return;
+      return "";
     }
 
     const storageRef = ref(storage, `pdf/${file?.name}`);
@@ -100,25 +99,19 @@ export default function Post({ item }: { item: Job }) {
             break;
         }
       },
-      () => {
-        // Upload completed successfully, now we can get the download URL
-        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-          setLink(downloadURL);
-          console.log('File available at', downloadURL);
-        });
-      }
     );
+    return await getDownloadURL(uploadTask.snapshot.ref);
 
   };
 
   async function submit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    await handleUpload()
+    const resume = await handleUpload()
 
     emailjs.send("service_f0hbws8", "template_5h4l1dl", {
       title: item.title,
       to_email: item.to_email,
-      name,email,phone,link
+      name,email,phone,link: resume
     }, "2OrzLXsspxRe5a38n")
       .then((result) => {
         console.log(result.text);

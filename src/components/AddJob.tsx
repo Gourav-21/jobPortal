@@ -39,16 +39,26 @@ export default function AddJob({ setData }: { setData: React.Dispatch<React.SetS
     event.preventDefault();
 
     try {
-      await handleUpload()
-
+      let uploadedLogo;
+      if (file) {
+        try {
+          uploadedLogo = await handleUpload() as string;
+        } catch (error) {
+          console.error("Error uploading file:", error);
+          // Handle upload error (e.g., display an error message to the user)
+          return; // Exit the function if upload fails
+        }
+      } else {
+        uploadedLogo = logo; // Use the existing logo URL if no file is selected
+      }
       console.log(logo)
 
       const docRef = await addDoc(collection(db, "posts"), {
-        title, description, totalPositions, totalSurveys, positionsAvailable: totalPositions, surveysSubmitted: 0, logo, company, phone, to_email:email, location
+        title, description, totalPositions, totalSurveys, positionsAvailable: totalPositions, surveysSubmitted: 0, logo: uploadedLogo, company, phone, to_email:email, location
       });
 
       setData((prevData) => [
-        { title, logo, description, totalPositions, totalSurveys, id: docRef.id, positionsAvailable: totalPositions, surveysSubmitted: 0, company, phone, to_email:email, location },
+        { title, logo : uploadedLogo, description, totalPositions, totalSurveys, id: docRef.id, positionsAvailable: totalPositions, surveysSubmitted: 0, company, phone, to_email:email, location },
         ...prevData,
       ]);
 
@@ -109,7 +119,7 @@ export default function AddJob({ setData }: { setData: React.Dispatch<React.SetS
 
   const handleUpload = async () => {
     if (!file) {
-      return;
+      return logo;
     }
 
     const storageRef = ref(storage, `logo/${file?.name}`);
@@ -148,14 +158,9 @@ export default function AddJob({ setData }: { setData: React.Dispatch<React.SetS
             break;
         }
       },
-      () => {
-        // Upload completed successfully, now we can get the download URL
-        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-          setLogo(downloadURL);
-        });
-      }
     );
 
+    return await getDownloadURL(uploadTask.snapshot.ref);
   };
 
   return (
