@@ -139,11 +139,6 @@ export default function Post({ item }: { item: Job }) {
         <div className="grid grid-cols-7 gap-3 w-full text-bold">
           <div className="col-span-1 flex justify-center items-center  w-20 h-20 bg-purple-700">
             {item.logo?.length > 1 ? <img src={item.logo} alt="" className="w-full h-full object-cover" /> : <Building2 color="white" size={30} />}
-            {/* <Building2 color="white" size={30} /> */}
-            {/* <Avatar>
-              <AvatarImage src="" />
-              <AvatarFallback></AvatarFallback>
-            </Avatar> */}
           </div>
           <div className="col-span-6 grid gap-2 relative">
             <h1 className="text-xl font-semibold text-purple-700 " >{item?.title?.length > 50 ? item.title?.substring(0, 50) + "..." : item.title}</h1>
@@ -161,8 +156,8 @@ export default function Post({ item }: { item: Job }) {
           </div>
         </div>
       </DialogTrigger>
-      <DialogContent className="min-w-[800px]">
-        <div className="grid grid-cols-12 gap-3 h-full">
+      <DialogContent className="md:min-w-[800px] ">
+        <div className="grid grid-cols-6 md:grid-cols-12 gap-3 h-full">
 
           <div className="col-span-6 h-full flex flex-col gap-3">
             <div className="w-full grid gap-1 grid-cols-4">
