@@ -136,11 +136,11 @@ export default function Post({ item }: { item: Job }) {
   return (
     <Dialog open={open} onOpenChange={setOpen} >
       <DialogTrigger className="text-left hover:bg-muted mb-3 p-2 rounded-md w-full ">
-        <div className="grid grid-cols-7 gap-3 w-full text-bold">
-          <div className="col-span-1 flex justify-center items-center  w-20 h-20 bg-purple-700">
+        <div className="flex gap-3 w-full text-bold">
+          <div className=" flex justify-center items-center  w-20 h-20 bg-purple-700">
             {item.logo?.length > 1 ? <img src={item.logo} alt="" className="w-full h-full object-cover" /> : <Building2 color="white" size={30} />}
           </div>
-          <div className="col-span-6 grid gap-2 relative">
+          <div className="flex flex-col flex-1  gap-2 relative">
             <h1 className="text-xl font-semibold text-purple-700 " >{item?.title?.length > 50 ? item.title?.substring(0, 50) + "..." : item.title}</h1>
             <p className="text-sm text-gray-600 font-semibold" >{item?.description?.substring(0, 70) + "..."}</p>
 
