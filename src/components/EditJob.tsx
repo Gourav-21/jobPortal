@@ -34,7 +34,7 @@ export default function EditJob({ item, setData }: { item: Job, setData: React.D
   const [email, setEmail] = useState(item.to_email);
   const [location, setLocation] = useState(item.location);
   const [file, setFile] = useState<File | null>();
-  const [logo, setLogo] = useState(item.logo);
+  const [logo, setLogo] = useState(item.logo || "");
   const [description, setDescription] = useState(item.description);
   const [totalPositions, setTotalPositions] = useState(item.totalPositions);
   const [positionsAvailable, setPositionsAvailable] = useState(item.positionsAvailable);
@@ -268,7 +268,7 @@ export default function EditJob({ item, setData }: { item: Job, setData: React.D
                 />
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="totalPositions">Positions Available</Label>
+                <Label htmlFor="totalPositions">Total Positions</Label>
                 <Input
                   className="col-span-3"
                   id="totalPositions"
