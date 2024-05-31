@@ -1,18 +1,9 @@
 import { Job } from "@/App"
-import { Building2 } from "lucide-react"
-
+import { Building2, Mail, MapPin, Phone } from "lucide-react"
 import { Button } from "@/components/ui/button"
-
-import {
-  CardDescription,
-} from "@/components/ui/card"
+import { CardDescription, } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogTrigger,
-} from "@/components/ui/dialog"
+import { Dialog, DialogClose, DialogContent, DialogTrigger, } from "@/components/ui/dialog"
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { Label } from "@/components/ui/label"
 import { ChangeEvent, useState } from "react"
@@ -20,6 +11,8 @@ import { useToast } from "./ui/use-toast"
 import { storage } from "@/lib/firebase"
 import { Progress } from "./ui/progress"
 import emailjs from '@emailjs/browser';
+import { ScrollArea } from "./ui/scroll-area"
+import { Textarea } from "./ui/textarea"
 
 export default function Post({ item }: { item: Job }) {
   const { toast } = useToast()
@@ -28,8 +21,9 @@ export default function Post({ item }: { item: Job }) {
   const [progress, setProgress] = useState(0);
 
   const [email, setEmail] = useState("");
+  const [text, setText] = useState("");
   const [name, setName] = useState("");
-  const [phone,setPhone] = useState<number| undefined>();
+  const [phone, setPhone] = useState<number | undefined>();
   const [open, setOpen] = useState(false);
 
 
@@ -111,7 +105,7 @@ export default function Post({ item }: { item: Job }) {
     emailjs.send("service_f0hbws8", "template_5h4l1dl", {
       title: item.title,
       to_email: item.to_email,
-      name,email,phone,link: resume
+      name, email, phone, link: resume, about_yourself: text
     }, "2OrzLXsspxRe5a38n")
       .then((result) => {
         console.log(result.text);
@@ -127,19 +121,24 @@ export default function Post({ item }: { item: Job }) {
         toast({
           variant: "destructive",
           title: "Uh oh! ",
-          description:error,
+          description: error,
         })
         console.error('Error sending email:', error);
-      });  
-    }
-
+      });
+  }
+  
+  const handleLocationClick = () => {
+    // Replace this with your preferred map URL generation logic
+    const mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(item.location)}`;
+    window.open(mapUrl, "_blank");
+  };
 
   return (
     <Dialog open={open} onOpenChange={setOpen} >
       <DialogTrigger className="text-left hover:bg-muted mb-3 p-2 rounded-md w-full ">
         <div className="grid grid-cols-7 gap-3 w-full text-bold">
           <div className="col-span-1 flex justify-center items-center  w-20 h-20 bg-purple-700">
-            {item.logo?.length > 1 ?   <img src={item.logo} alt="" className="w-full h-full object-cover" /> : <Building2 color="white" size={30} />}
+            {item.logo?.length > 1 ? <img src={item.logo} alt="" className="w-full h-full object-cover" /> : <Building2 color="white" size={30} />}
             {/* <Building2 color="white" size={30} /> */}
             {/* <Avatar>
               <AvatarImage src="" />
@@ -163,19 +162,40 @@ export default function Post({ item }: { item: Job }) {
         </div>
       </DialogTrigger>
       <DialogContent className="min-w-[800px]">
-        <div className="grid grid-cols-12 gap-2">
+        <div className="grid grid-cols-12 gap-3 h-full">
 
-          <div className="col-span-6">
-            <div className="col-span-1 flex justify-center items-center w-20 h-20  bg-purple-700">
-            {item.logo?.length > 1 ?  <img src={item.logo} alt="" className="w-full h-full object-cover" /> : <Building2 color="white" size={30} />}
-
-              {/* <Avatar>
-              <AvatarImage src="" />
-              <AvatarFallback></AvatarFallback>
-            </Avatar> */}
+          <div className="col-span-6 h-full flex flex-col gap-3">
+            <div className="w-full grid gap-1 grid-cols-4">
+              <div className="flex col-span-1 justify-center items-center w-20 h-20  bg-purple-700">
+                {item.logo?.length > 1 ? <img src={item.logo} alt="" className="w-full h-full object-cover" /> : <Building2 color="white" size={30} />}
+              </div>
+              <div className="text-3xl text-wrap h-full col-span-3 capitalize font-semibold text-purple-900 flex items-center ">
+                {item.company}
+              </div>
             </div>
             <div className="text-xl font-semibold text-purple-700 " >{item.title}</div>
-            <CardDescription className="">{item.description}</CardDescription>
+
+            <ScrollArea className="text-sm text-gray-600 h-52" >
+              <CardDescription className="whitespace-pre-line">{item.description}</CardDescription>
+            </ScrollArea>
+
+            <div className="flex flex-col justify-between  text-sm text-purple-800 gap-3 font-semibold mt-auto">
+              <div onClick={handleLocationClick} className="inline-flex gap-1 cursor-pointer">
+                <MapPin />{item.location}
+              </div>
+              <div className="flex gap-3 ">
+           
+                <a href={`tel:${item.phone}`} className="inline-flex gap-1">
+                  <Phone />{item.phone}
+                </a>
+
+
+                <a href={`mailto:${item.to_email}`} className="inline-flex gap-1">
+                  <Mail />{item.to_email}
+                </a>
+
+              </div>
+            </div>
 
           </div>
           <div className="col-span-6">
@@ -183,28 +203,32 @@ export default function Post({ item }: { item: Job }) {
               <div className="grid w-full items-center gap-4">
                 <div className="flex flex-col space-y-1.5">
                   <Label htmlFor="name">Name</Label>
-                  <Input id="name" value={name} onChange={(e) => setName(e.target.value)} type="text" placeholder="Name " />
+                  <Input id="name" value={name} onChange={(e) => setName(e.target.value)} type="text" required placeholder="Name " />
                 </div>
                 <div className="flex flex-col space-y-1.5">
                   <Label htmlFor="email">Email</Label>
-                  <Input id="email" value={email} onChange={(e) => setEmail(e.target.value)} type="email" placeholder="Email " />
+                  <Input id="email" value={email} onChange={(e) => setEmail(e.target.value)} type="email" required placeholder="Email " />
                 </div>
                 <div className="flex flex-col space-y-1.5">
                   <Label htmlFor="phone">Phone</Label>
-                  <Input id="phone" value={phone} onChange={(e) => setPhone(Number(e.target.value))} type="number" placeholder="Phone " />
+                  <Input id="phone" value={phone} onChange={(e) => setPhone(Number(e.target.value))} type="number" required placeholder="Phone " />
+                </div>
+                <div className="flex flex-col space-y-1.5">
+                  <Label htmlFor="about yourself">About yourself</Label>
+                  <Textarea id="about yourself" value={text} onChange={(e) => setText(e.target.value)} required placeholder="about yourself " />
                 </div>
                 <div className="flex flex-col space-y-1.5">
                   <Label htmlFor="resume">Attach Resume</Label>
                   <Input id="resume" type="file" onChange={handleFileChange} accept="application/pdf" placeholder="Resume" required />
                 </div>
-                  <Progress value={progress} className="" />
+                {progress > 0 && <Progress value={progress} className="" />}
                 <div className="flex justify-between ">
                   <DialogClose asChild>
                     <Button type="button" variant="secondary" className="mr-auto">
                       Cancel
                     </Button>
                   </DialogClose>
-                  <Button  className="bg-purple-700 text-white w-full ml-2 " >Submit</Button>
+                  <Button className="bg-purple-700 text-white w-full ml-2 " >Submit</Button>
 
                 </div>
               </div>

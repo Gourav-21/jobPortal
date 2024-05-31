@@ -29,7 +29,7 @@ export interface Job {
 export default function App() {
   const [data, setData] = useState<Job[]>([]);
 
-  const [admin, setAdmin] = useState(false)
+  const [admin, setAdmin] = useState(true)
 
   async function deleteJob(id: string) {
     try {
@@ -87,9 +87,9 @@ export default function App() {
           {data.length === 0 && <div className="text-center m-5" >No jobs found</div>}
 
           <div className="overflow-auto flex flex-col justify-items-stretch gap-3" >
-            {data.map((item, index) => {
+            {data.map((item) => {
               return (
-                <div className="relative" key={`${index}`}>
+                <div className="relative" key={`${item.id}`}>
 
                   {admin && <div className="flex gap-2 absolute top-4 right-4 z-50">
                     <EditJob item={item} setData={setData} />
