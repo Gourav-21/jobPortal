@@ -1,5 +1,5 @@
 import { ChangeEvent } from "react"
-import { Building2 } from "lucide-react"
+import { Building2, Check, X } from "lucide-react"
 import { storage } from "@/lib/firebase"
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { Progress } from "./ui/progress"
@@ -38,7 +38,7 @@ export default function EditJob({ item, setData }: { item: Job, setData: React.D
   const [description, setDescription] = useState(item.description);
   const [totalPositions, setTotalPositions] = useState(item.totalPositions);
   const [positionsAvailable, setPositionsAvailable] = useState(item.positionsAvailable);
-  const [totalSurveys, setTotalSurveys] = useState(item.totalSurveys);
+  const [totalApplications, setTotalApplications] = useState(item.totalApplications);
 
 
   async function add(event: React.FormEvent<HTMLFormElement>) {
@@ -59,19 +59,19 @@ export default function EditJob({ item, setData }: { item: Job, setData: React.D
       }
       console.log(logo)
 
-        await setDoc(doc(db, "posts", item.id), {
-          title, description, totalPositions, totalSurveys, positionsAvailable, surveysSubmitted: item?.surveysSubmitted, logo: uploadedLogo, company, phone, to_email: email, location
-        });
-        setData((prevData) => prevData.map((job) => job.id === item.id ? { ...job, title, description, positionsAvailable, totalPositions, totalSurveys, logo: uploadedLogo, company, phone, to_email: email, location } : job));
+      await setDoc(doc(db, "posts", item.id), {
+        title, description, totalPositions, totalApplications, positionsAvailable, applicationsSubmitted: item?.applicationsSubmitted, logo: uploadedLogo, company, phone, to_email: email, location
+      });
+      setData((prevData) => prevData.map((job) => job.id === item.id ? { ...job, title, description, positionsAvailable, totalPositions, totalApplications, logo: uploadedLogo, company, phone, to_email: email, location } : job));
 
-        setOpen(false);
-        setProgress(0);
+      setOpen(false);
+      setProgress(0);
 
-        toast({
-          title: "Job edited successfully!",
-          description: "Your job has been edited.",
-        })
-      
+      toast({
+        title: "Job edited successfully!",
+        description: "Your job has been edited.",
+      })
+
 
     } catch (error) {
       console.error("Error getting posts:", error);
@@ -292,24 +292,27 @@ export default function EditJob({ item, setData }: { item: Job, setData: React.D
                 />
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="totalSurveys">Total Surveys</Label>
-                <Input
-                  className="col-span-3"
-                  type="number"
-                  id="totalSurveys"
-                  value={totalSurveys}
-                  min={1}
-                  onChange={(e) => setTotalSurveys(Number(e.target.value))}
-                  required
-                />
+                <Label htmlFor="Total Applications">Total Applications</Label>
+                <div className="flex gap-2 w-full col-span-3">
+
+                  <Input
+                    className=""
+                    type="number"
+                    id="totalApplications"
+                    value={totalApplications}
+                    onChange={(e) => setTotalApplications(Number(e.target.value))}
+                    required
+                  />
+                  <Button type="button" className="inline-flex gap-2" variant={"secondary"} onClick={() => setTotalApplications(0)}>{totalApplications == 0 ? <Check color="green" size={20} /> : <X color="red" size={20} />}No limit</Button>
+                </div>
               </div>
             </div>
 
           </div>
 
-         {progress > 0 && <Progress value={progress} className="" />}
+          {progress > 0 && <Progress value={progress} className="" />}
           <DialogFooter>
-            <Button type="submit" className="w-full">Add Job</Button>
+            <Button type="submit" className="w-full">Edit Job</Button>
           </DialogFooter>
         </form>
       </DialogContent>

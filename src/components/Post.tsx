@@ -1,5 +1,5 @@
 import { Job } from "@/App"
-import { Building2, Mail, MapPin, Phone } from "lucide-react"
+import { Building2, CircleCheckBig, CircleX, Mail, MapPin, Phone } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { CardDescription, } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -8,14 +8,17 @@ import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { Label } from "@/components/ui/label"
 import { ChangeEvent, useState } from "react"
 import { useToast } from "./ui/use-toast"
-import { storage } from "@/lib/firebase"
+import { db, storage } from "@/lib/firebase"
 import { Progress } from "./ui/progress"
 import emailjs from '@emailjs/browser';
 import { ScrollArea } from "./ui/scroll-area"
 import { Textarea } from "./ui/textarea"
+import { doc, setDoc } from "firebase/firestore"
 
-export default function Post({ item }: { item: Job }) {
+export default function Post({ item, setData, admin }: { item: Job, setData: React.Dispatch<React.SetStateAction<Job[]>>, admin: boolean }) {
   const { toast } = useToast()
+
+  const [submitted, setSubmitted] = useState(localStorage.getItem(item.id) || "");
 
   const [file, setFile] = useState<File | null>();
   const [progress, setProgress] = useState(0);
@@ -25,6 +28,8 @@ export default function Post({ item }: { item: Job }) {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState<number | undefined>();
   const [open, setOpen] = useState(false);
+  const [over, setOver] = useState<boolean>(item.totalApplications==0? false : item.applicationsSubmitted >= item.totalApplications);
+
 
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -65,7 +70,7 @@ export default function Post({ item }: { item: Job }) {
         // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
         const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
         setProgress(progress);
-        console.log('Upload is ' + progress + '% done');
+        console.log('Upload is ' + progress + '% over');
         switch (snapshot.state) {
           case 'paused':
             console.log('Upload is paused');
@@ -100,33 +105,47 @@ export default function Post({ item }: { item: Job }) {
 
   async function submit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    const resume = await handleUpload()
+    // const resume = await handleUpload()
 
-    emailjs.send("service_f0hbws8", "template_5h4l1dl", {
-      title: item.title,
-      to_email: item.to_email,
-      name, email, phone, link: resume, about_yourself: text
-    }, "2OrzLXsspxRe5a38n")
-      .then((result) => {
-        console.log(result.text);
-        toast({
-          title: "Success!",
-          description: "Your application has been submitted successfully.",
-        })
-        setOpen(false)
-        setFile(null)
-        setProgress(0)
-      })
-      .catch((error) => {
-        toast({
-          variant: "destructive",
-          title: "Uh oh! ",
-          description: error,
-        })
-        console.error('Error sending email:', error);
-      });
+    // emailjs.send("service_f0hbws8", "template_5h4l1dl", {
+    //   title: item.title,
+    //   to_email: item.to_email,
+    //   name, email, phone, link: resume, about_yourself: text
+    // }, "2OrzLXsspxRe5a38n")
+    //   .then((result) => {
+    //     console.log(result.text);
+    //     toast({
+    //       title: "Success!",
+    //       description: "Your application has been submitted successfully.",
+    //     })
+    //     setOpen(false)
+    //     setDoc(doc(db, "posts", item.id), {
+    //       ...item, applicationsSubmitted: item?.applicationsSubmitted + 1
+    //     });
+    //     setFile(null)
+    //     setProgress(0)
+    //   })
+    //   .catch((error) => {
+    //     toast({
+    //       variant: "destructive",
+    //       title: "Uh oh! ",
+    //       description: error,
+    //     })
+    //     console.error('Error sending email:', error);
+    //   });
+    setDoc(doc(db, "posts", item.id), {
+      ...item, applicationsSubmitted: item?.applicationsSubmitted + 1
+    });
+    setData((prevData) => prevData.map((job) => job.id === item.id ? { ...job, applicationsSubmitted: job.applicationsSubmitted + 1 } : job));
+    setSubmitted("true")
+    localStorage.setItem(item.id, "true")
+    if (item.applicationsSubmitted == item.totalApplications - 1) {
+      setOver(true)
+    }
+    setOpen(false)
+
   }
-  
+
   const handleLocationClick = () => {
     // Replace this with your preferred map URL generation logic
     const mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(item.location)}`;
@@ -135,28 +154,33 @@ export default function Post({ item }: { item: Job }) {
 
   return (
     <Dialog open={open} onOpenChange={setOpen} >
-      <DialogTrigger className="text-left hover:bg-muted mb-3 p-2 rounded-md w-full ">
+      <DialogTrigger className={`text-left hover:bg-muted mb-3 p-2 rounded-md w-full ${submitted && "bg-green-100 hover:bg-green-50 text-white cursor-not-allowed"} ${over == true ? "cursor-not-allowed bg-muted" : ""} `}>
         <div className="flex gap-3 w-full text-bold">
           <div className=" flex justify-center items-center  w-20 h-20 bg-purple-700">
             {item.logo?.length > 1 ? <img src={item.logo} alt="" className="w-full h-full object-cover" /> : <Building2 color="white" size={30} />}
           </div>
           <div className="flex flex-col flex-1  gap-2 relative">
-            <h1 className="text-xl font-semibold text-purple-700 " >{item?.title?.length > 50 ? item.title?.substring(0, 50) + "..." : item.title}</h1>
-            <p className="text-sm text-gray-600 font-semibold" >{item?.description?.substring(0, 70) + "..."}</p>
+            <div className="flex justify-between ">
+              <h1 className="text-xl font-semibold text-purple-700 truncate" >{item?.title?.length > 50 ? item.title?.substring(0, 50) + "..." : item.title}</h1>
+              {submitted && <div className={`text-sm text-green-600 font-semibold inline-flex gap-2  ${admin == true && "mr-16 mt-1"}`}>
+                <CircleCheckBig color="green" size={20} /> Application Submitted
+              </div>}
+            </div>
+            <p className="text-sm text-gray-600 font-semibold" >{item?.description?.length > 70 ? item?.description?.substring(0, 70) + "..." : item.description}</p>
 
             <div className="flex justify-between text-sm text-purple-800 font-semibold">
               <div>
                 {item.positionsAvailable}/{item.totalPositions} Positions Available
               </div>
-              <div>
-                {item.surveysSubmitted}/{item.totalSurveys} Surveys submitted
-              </div>
+             {over==false? <div>
+                {item.applicationsSubmitted}{item.totalApplications==0? "":`${"/"+item.totalApplications}`} Applications submitted
+              </div>: <div className="text-red-600 inline-flex gap-2"><CircleX color="red" size={20} />Applications Closed</div>}
             </div>
 
           </div>
         </div>
       </DialogTrigger>
-      <DialogContent className="md:min-w-[800px] ">
+      {!submitted && !over && <DialogContent className="md:min-w-[800px] ">
         <div className="grid grid-cols-6 md:grid-cols-12 gap-3 h-full">
 
           <div className="col-span-6 h-full flex flex-col gap-3">
@@ -179,7 +203,7 @@ export default function Post({ item }: { item: Job }) {
                 <MapPin />{item.location}
               </div>
               <div className="flex gap-3 ">
-           
+
                 <a href={`tel:${item.phone}`} className="inline-flex gap-1">
                   <Phone />{item.phone}
                 </a>
@@ -198,23 +222,23 @@ export default function Post({ item }: { item: Job }) {
               <div className="grid w-full items-center gap-4">
                 <div className="flex flex-col space-y-1.5">
                   <Label htmlFor="name">Name</Label>
-                  <Input id="name" value={name} onChange={(e) => setName(e.target.value)} type="text" required placeholder="Name " />
+                  <Input id="name" value={name} onChange={(e) => setName(e.target.value)} type="text" placeholder="Name " />
                 </div>
                 <div className="flex flex-col space-y-1.5">
                   <Label htmlFor="email">Email</Label>
-                  <Input id="email" value={email} onChange={(e) => setEmail(e.target.value)} type="email" required placeholder="Email " />
+                  <Input id="email" value={email} onChange={(e) => setEmail(e.target.value)} type="email" placeholder="Email " />
                 </div>
                 <div className="flex flex-col space-y-1.5">
                   <Label htmlFor="phone">Phone</Label>
-                  <Input id="phone" value={phone} onChange={(e) => setPhone(Number(e.target.value))} type="number" required placeholder="Phone " />
+                  <Input id="phone" value={phone} onChange={(e) => setPhone(Number(e.target.value))} type="number" placeholder="Phone " />
                 </div>
                 <div className="flex flex-col space-y-1.5">
                   <Label htmlFor="about yourself">About yourself</Label>
-                  <Textarea id="about yourself" value={text} onChange={(e) => setText(e.target.value)} required placeholder="about yourself " />
+                  <Textarea id="about yourself" value={text} onChange={(e) => setText(e.target.value)} placeholder="about yourself " />
                 </div>
                 <div className="flex flex-col space-y-1.5">
                   <Label htmlFor="resume">Attach Resume</Label>
-                  <Input id="resume" type="file" onChange={handleFileChange} accept="application/pdf" placeholder="Resume" required />
+                  <Input id="resume" type="file" onChange={handleFileChange} accept="application/pdf" placeholder="Resume" />
                 </div>
                 {progress > 0 && <Progress value={progress} className="" />}
                 <div className="flex justify-between ">
@@ -233,6 +257,7 @@ export default function Post({ item }: { item: Job }) {
         </div>
 
       </DialogContent>
+      }
     </Dialog>
   )
 }

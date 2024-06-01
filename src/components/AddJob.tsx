@@ -12,7 +12,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { useToast } from "./ui/use-toast"
-import { Building2, LockOpen } from "lucide-react"
+import { Building2, Check, LockOpen, X } from "lucide-react"
 import { Textarea } from "./ui/textarea"
 import { addDoc, collection } from "firebase/firestore"
 import { db, storage } from "@/lib/firebase"
@@ -33,7 +33,7 @@ export default function AddJob({ setData }: { setData: React.Dispatch<React.SetS
   const [progress, setProgress] = useState(0);
   const [description, setDescription] = useState("");
   const [totalPositions, setTotalPositions] = useState(0);
-  const [totalSurveys, setTotalSurveys] = useState(0);
+  const [totalApplications, setTotalApplications] = useState(0);
 
   async function add(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -54,18 +54,18 @@ export default function AddJob({ setData }: { setData: React.Dispatch<React.SetS
       console.log(logo)
 
       const docRef = await addDoc(collection(db, "posts"), {
-        title, description, totalPositions, totalSurveys, positionsAvailable: totalPositions, surveysSubmitted: 0, logo: uploadedLogo, company, phone, to_email:email, location
+        title, description, totalPositions, totalApplications, positionsAvailable: totalPositions, applicationsSubmitted: 0, logo: uploadedLogo, company, phone, to_email: email, location
       });
 
       setData((prevData) => [
-        { title, logo : uploadedLogo, description, totalPositions, totalSurveys, id: docRef.id, positionsAvailable: totalPositions, surveysSubmitted: 0, company, phone, to_email:email, location },
+        { title, logo: uploadedLogo, description, totalPositions, totalApplications, id: docRef.id, positionsAvailable: totalPositions, applicationsSubmitted: 0, company, phone, to_email: email, location },
         ...prevData,
       ]);
 
       setTitle("");
       setDescription("");
       setTotalPositions(0);
-      setTotalSurveys(0);
+      setTotalApplications(0);
       setFile(null);
       setLogo("");
       setProgress(0);
@@ -192,8 +192,8 @@ export default function AddJob({ setData }: { setData: React.Dispatch<React.SetS
                   <Label htmlFor="logo">Logo</Label>
                   <div className="flex gap-2">
 
-                  <Input id="logo" className="col-span-3" type="file" onChange={handleFileChange} accept="image/png, image/jpeg" placeholder="logo " />
-                 {file && <Button type="button" onClick={() => setFile(null)}>Remove</Button>}
+                    <Input id="logo" className="col-span-3" type="file" onChange={handleFileChange} accept="image/png, image/jpeg" placeholder="logo " />
+                    {file && <Button type="button" onClick={() => setFile(null)}>Remove</Button>}
                   </div>
                 </div>
               </div>
@@ -282,16 +282,19 @@ export default function AddJob({ setData }: { setData: React.Dispatch<React.SetS
                 />
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="totalSurveys">Total Surveys</Label>
-                <Input
-                  className="col-span-3"
-                  type="number"
-                  id="totalSurveys"
-                  value={totalSurveys}
-                  min={1}
-                  onChange={(e) => setTotalSurveys(Number(e.target.value))}
-                  required
-                />
+                <Label htmlFor="totalApplications">Total Applications</Label>
+                <div className="flex gap-2 w-full col-span-3">
+
+                  <Input
+                    className=""
+                    type="number"
+                    id="totalApplications"
+                    value={totalApplications}
+                    onChange={(e) => setTotalApplications(Number(e.target.value))}
+                    required
+                  />
+                  <Button type="button" className="inline-flex gap-2" variant={"secondary"} onClick={() => setTotalApplications(0)}>{totalApplications ==0 ? <Check color="green" size={20} />:<X color="red" size={20} />}No limit</Button>
+                </div>
               </div>
             </div>
 

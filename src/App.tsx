@@ -17,8 +17,8 @@ export interface Job {
   description: string;
   positionsAvailable: number;
   totalPositions: number;
-  surveysSubmitted: number;
-  totalSurveys: number;
+  applicationsSubmitted: number;
+  totalApplications: number;
   logo:string,
   company:string,
   phone:number | undefined,
@@ -96,7 +96,7 @@ export default function App() {
                     <Trash2 onClick={() => deleteJob(item.id)} className="hover:text-red-700 h-5 w-5" />
                   </div>}
 
-                  <Post item={item} />
+                  <Post item={item} admin={admin} setData={setData}/>
                   <Separator className="" />
                 </div>
               )
