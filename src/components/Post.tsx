@@ -105,44 +105,42 @@ export default function Post({ item, setData, admin }: { item: Job, setData: Rea
 
   async function submit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    // const resume = await handleUpload()
+    const resume = await handleUpload()
 
-    // emailjs.send("service_f0hbws8", "template_5h4l1dl", {
-    //   title: item.title,
-    //   to_email: item.to_email,
-    //   name, email, phone, link: resume, about_yourself: text
-    // }, "2OrzLXsspxRe5a38n")
-    //   .then((result) => {
-    //     console.log(result.text);
-    //     toast({
-    //       title: "Success!",
-    //       description: "Your application has been submitted successfully.",
-    //     })
-    //     setOpen(false)
-    //     setDoc(doc(db, "posts", item.id), {
-    //       ...item, applicationsSubmitted: item?.applicationsSubmitted + 1
-    //     });
-    //     setFile(null)
-    //     setProgress(0)
-    //   })
-    //   .catch((error) => {
-    //     toast({
-    //       variant: "destructive",
-    //       title: "Uh oh! ",
-    //       description: error,
-    //     })
-    //     console.error('Error sending email:', error);
-    //   });
-    setDoc(doc(db, "posts", item.id), {
-      ...item, applicationsSubmitted: item?.applicationsSubmitted + 1
-    });
-    setData((prevData) => prevData.map((job) => job.id === item.id ? { ...job, applicationsSubmitted: job.applicationsSubmitted + 1 } : job));
-    setSubmitted("true")
-    localStorage.setItem(item.id, "true")
-    if (item.applicationsSubmitted == item.totalApplications - 1) {
-      setOver(true)
-    }
-    setOpen(false)
+    emailjs.send("service_f0hbws8", "template_5h4l1dl", {
+      title: item.title,
+      to_email: item.to_email,
+      name, email, phone, link: resume, about_yourself: text
+    }, "2OrzLXsspxRe5a38n")
+      .then((result) => {
+        console.log(result.text);
+        toast({
+          title: "Success!",
+          description: "Your application has been submitted successfully.",
+        })
+        setDoc(doc(db, "posts", item.id), {
+          ...item, applicationsSubmitted: item?.applicationsSubmitted + 1
+        });
+        setData((prevData) => prevData.map((job) => job.id === item.id ? { ...job, applicationsSubmitted: job.applicationsSubmitted + 1 } : job));
+        setSubmitted("true")
+        localStorage.setItem(item.id, "true")
+        if (item.applicationsSubmitted == item.totalApplications - 1) {
+          setOver(true)
+        }
+        setOpen(false)
+     
+        setFile(null)
+        setProgress(0)
+      })
+      .catch((error) => {
+        toast({
+          variant: "destructive",
+          title: "Uh oh! ",
+          description: error,
+        })
+        console.error('Error sending email:', error);
+      });
+    
 
   }
 
@@ -222,23 +220,23 @@ export default function Post({ item, setData, admin }: { item: Job, setData: Rea
               <div className="grid w-full items-center gap-4">
                 <div className="flex flex-col space-y-1.5">
                   <Label htmlFor="name">Name</Label>
-                  <Input id="name" value={name} onChange={(e) => setName(e.target.value)} type="text" placeholder="Name " />
+                  <Input id="name" value={name} onChange={(e) => setName(e.target.value)} type="text" required placeholder="Name " />
                 </div>
                 <div className="flex flex-col space-y-1.5">
                   <Label htmlFor="email">Email</Label>
-                  <Input id="email" value={email} onChange={(e) => setEmail(e.target.value)} type="email" placeholder="Email " />
+                  <Input id="email" value={email} onChange={(e) => setEmail(e.target.value)} type="email" required placeholder="Email " />
                 </div>
                 <div className="flex flex-col space-y-1.5">
                   <Label htmlFor="phone">Phone</Label>
-                  <Input id="phone" value={phone} onChange={(e) => setPhone(Number(e.target.value))} type="number" placeholder="Phone " />
+                  <Input id="phone" value={phone} onChange={(e) => setPhone(Number(e.target.value))} type="number" required placeholder="Phone " />
                 </div>
                 <div className="flex flex-col space-y-1.5">
                   <Label htmlFor="about yourself">About yourself</Label>
-                  <Textarea id="about yourself" value={text} onChange={(e) => setText(e.target.value)} placeholder="about yourself " />
+                  <Textarea id="about yourself" value={text} onChange={(e) => setText(e.target.value)} required placeholder="about yourself " />
                 </div>
                 <div className="flex flex-col space-y-1.5">
                   <Label htmlFor="resume">Attach Resume</Label>
-                  <Input id="resume" type="file" onChange={handleFileChange} accept="application/pdf" placeholder="Resume" />
+                  <Input id="resume" type="file" onChange={handleFileChange} accept="application/pdf" required placeholder="Resume" />
                 </div>
                 {progress > 0 && <Progress value={progress} className="" />}
                 <div className="flex justify-between ">
