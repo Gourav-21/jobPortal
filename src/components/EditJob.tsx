@@ -164,9 +164,9 @@ export default function EditJob({ item, setData }: { item: Job, setData: React.D
       </DialogTrigger>
       <DialogContent className="sm:max-w-[825px]">
         <DialogHeader>
-          <DialogTitle> Rediger stillingsinnlegg  </DialogTitle>
+          <DialogTitle> Edit Job Post  </DialogTitle>
           <DialogDescription>
-          Rediger stillingsposten nedenfor
+            Edit the job post below
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={add} className="grid grid-cols-1 gap-4">
@@ -190,13 +190,13 @@ export default function EditJob({ item, setData }: { item: Job, setData: React.D
                   <div className="flex gap-2">
 
                     <Input id="logo" className="col-span-3" type="file" onChange={handleFileChange} accept="image/png, image/jpeg" placeholder="logo " />
-                    {file && <Button type="button" onClick={() => setFile(null)}>Fjerne</Button>}
-                    {logo?.length > 1 && file == null && <Button type="button" onClick={() => setLogo("")}>Fjerne</Button>}
+                    {file && <Button type="button" onClick={() => setFile(null)}>Remove</Button>}
+                    {logo?.length > 1 && file == null && <Button type="button" onClick={() => setLogo("")}>Remove</Button>}
                   </div>
                 </div>
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="company">Selskap</Label>
+                <Label htmlFor="company">Company</Label>
                 <Input
                   className="col-span-3"
                   id="company"
@@ -207,7 +207,7 @@ export default function EditJob({ item, setData }: { item: Job, setData: React.D
                 />
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="location">plassering</Label>
+                <Label htmlFor="location">location</Label>
                 <Input
                   className="col-span-3"
                   id="location"
@@ -218,7 +218,7 @@ export default function EditJob({ item, setData }: { item: Job, setData: React.D
                 />
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="phone">telefon</Label>
+                <Label htmlFor="phone">phone</Label>
                 <Input
                   className="col-span-3"
                   id="phone"
@@ -245,7 +245,7 @@ export default function EditJob({ item, setData }: { item: Job, setData: React.D
             <div className="grid cols-span-4 items-center gap-4">
 
               <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="title">Tittel</Label>
+                <Label htmlFor="title">Title</Label>
                 <Input
                   className="col-span-3"
                   id="title"
@@ -256,7 +256,7 @@ export default function EditJob({ item, setData }: { item: Job, setData: React.D
                 />
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="description">Beskrivelse</Label>
+                <Label htmlFor="description">Description</Label>
                 <Textarea
                   className="col-span-3"
                   id="description"
@@ -268,7 +268,7 @@ export default function EditJob({ item, setData }: { item: Job, setData: React.D
                 />
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="totalPositions">Totalt antall stillinger</Label>
+                <Label htmlFor="totalPositions">Total Positions</Label>
                 <Input
                   className="col-span-3"
                   id="totalPositions"
@@ -280,7 +280,7 @@ export default function EditJob({ item, setData }: { item: Job, setData: React.D
                 />
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="totalPositions">Stillinger tilgjengelig</Label>
+                <Label htmlFor="totalPositions">Positions Available</Label>
                 <Input
                   className="col-span-3"
                   id="totalPositions"
@@ -292,7 +292,7 @@ export default function EditJob({ item, setData }: { item: Job, setData: React.D
                 />
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="Total Applications">Totalt antall søknader</Label>
+                <Label htmlFor="Total Applications">Total Applications</Label>
                 <div className="flex gap-2 w-full col-span-3">
 
                   <Input
@@ -303,7 +303,7 @@ export default function EditJob({ item, setData }: { item: Job, setData: React.D
                     onChange={(e) => setTotalApplications(Number(e.target.value))}
                     required
                   />
-                  <Button type="button" className="inline-flex gap-2" variant={"secondary"} onClick={() => setTotalApplications(0)}>{totalApplications == 0 ? <Check color="green" size={20} /> : <X color="red" size={20} />}Ingen grense</Button>
+                  <Button type="button" className="inline-flex gap-2" variant={"secondary"} onClick={() => setTotalApplications(0)}>{totalApplications == 0 ? <Check color="green" size={20} /> : <X color="red" size={20} />}No limit</Button>
                 </div>
               </div>
             </div>
@@ -312,7 +312,7 @@ export default function EditJob({ item, setData }: { item: Job, setData: React.D
 
           {progress > 0 && <Progress value={progress} className="" />}
           <DialogFooter>
-            <Button type="submit" className="w-full">Rediger jobb</Button>
+            <Button type="submit" className="w-full">Edit Job</Button>
           </DialogFooter>
         </form>
       </DialogContent>

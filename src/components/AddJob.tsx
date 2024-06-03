@@ -2,7 +2,15 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { ChangeEvent, useState } from "react"
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger, } from "@/components/ui/dialog"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
 import { useToast } from "./ui/use-toast"
 import { Building2, Check, LockOpen, X } from "lucide-react"
 import { Textarea } from "./ui/textarea"
@@ -67,8 +75,8 @@ export default function AddJob({ setData }: { setData: React.Dispatch<React.SetS
 
 
       toast({
-        title: "Jobben ble lagt til!",
-        description: "Jobben din er lagt til jobblisten.",
+        title: "Job added successfully!",
+        description: "Your job has been added to the job list.",
       })
       setOpen(false);
     } catch (error) {
@@ -76,7 +84,7 @@ export default function AddJob({ setData }: { setData: React.Dispatch<React.SetS
 
       toast({
         variant: "destructive",
-        title: "UH oh! Noe gikk galt.",
+        title: "Uh oh! Something went wrong.",
         description: "There was a problem with your request.",
       })
       return
@@ -89,8 +97,8 @@ export default function AddJob({ setData }: { setData: React.Dispatch<React.SetS
       if (e.target.files.length > 1) {
         toast({
           variant: "destructive",
-          title: "UH oh! Noe gikk galt!",
-          description: "Du kan bare laste opp én fil om gangen.",
+          title: "Uh oh!",
+          description: "You can only upload one file at a time.",
         })
         setFile(null);
         return
@@ -99,7 +107,7 @@ export default function AddJob({ setData }: { setData: React.Dispatch<React.SetS
         toast({
           variant: "destructive",
           title: "Uh oh!",
-          description: "Filen din bør være mindre enn 5 MB",
+          description: "Your file should be less than 5MB",
         })
         setFile(null);
         return
@@ -158,13 +166,13 @@ export default function AddJob({ setData }: { setData: React.Dispatch<React.SetS
   return (
     <Dialog onOpenChange={setOpen} open={open}>
       <DialogTrigger asChild>
-        <Button variant="outline" className="inline-flex items-center gap-2">legge til jobb <LockOpen size={20} /></Button>
+        <Button variant="outline" className="inline-flex items-center gap-2">Add job <LockOpen size={20} /></Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[825px]">
         <DialogHeader>
-          <DialogTitle> Legg til ny stilling </DialogTitle>
+          <DialogTitle> Add New Job Post </DialogTitle>
           <DialogDescription>
-          Skriv inn jobbdetaljene dine nedenfor for å legge til jobblisten.
+            Enter your job details below to add to the job list.
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={add} className="grid grid-cols-1 gap-4">
@@ -190,29 +198,29 @@ export default function AddJob({ setData }: { setData: React.Dispatch<React.SetS
                 </div>
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="company">Selskap</Label>
+                <Label htmlFor="company">Company</Label>
                 <Input
                   className="col-span-3"
                   id="company"
                   value={company}
                   onChange={e => setCompany(e.target.value)}
-                  placeholder="Selskapsnavn"
+                  placeholder="Company"
                   required
                 />
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="location">plassering</Label>
+                <Label htmlFor="location">location</Label>
                 <Input
                   className="col-span-3"
                   id="location"
                   value={location}
                   onChange={e => setLocation(e.target.value)}
-                  placeholder="plassering"
+                  placeholder="location"
                   required
                 />
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="phone">telefon</Label>
+                <Label htmlFor="phone">phone</Label>
                 <Input
                   className="col-span-3"
                   id="phone"
@@ -239,30 +247,30 @@ export default function AddJob({ setData }: { setData: React.Dispatch<React.SetS
             <div className="grid cols-span-4 items-center gap-4">
 
               <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="title">Tittel</Label>
+                <Label htmlFor="title">Title</Label>
                 <Input
                   className="col-span-3"
                   id="title"
                   value={title}
                   onChange={e => setTitle(e.target.value)}
-                  placeholder="Jobbtittel"
+                  placeholder="Job title"
                   required
                 />
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="description">Beskrivelse</Label>
+                <Label htmlFor="description">Description</Label>
                 <Textarea
                   className="col-span-3"
                   id="description"
                   rows={6}
                   value={description}
                   onChange={e => setDescription(e.target.value)}
-                  placeholder="stillingsbeskrivelsen kommer her"
+                  placeholder="A job description goes here"
                   required
                 />
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="totalPositions">Stillinger tilgjengelig</Label>
+                <Label htmlFor="totalPositions">Positions Available</Label>
                 <Input
                   className="col-span-3"
                   id="totalPositions"
@@ -274,7 +282,7 @@ export default function AddJob({ setData }: { setData: React.Dispatch<React.SetS
                 />
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="totalApplications">Totalt antall søknader</Label>
+                <Label htmlFor="totalApplications">Total Applications</Label>
                 <div className="flex gap-2 w-full col-span-3">
 
                   <Input
@@ -285,7 +293,7 @@ export default function AddJob({ setData }: { setData: React.Dispatch<React.SetS
                     onChange={(e) => setTotalApplications(Number(e.target.value))}
                     required
                   />
-                  <Button type="button" className="inline-flex gap-2" variant={"secondary"} onClick={() => setTotalApplications(0)}>{totalApplications ==0 ? <Check color="green" size={20} />:<X color="red" size={20} />}Ingen grense</Button>
+                  <Button type="button" className="inline-flex gap-2" variant={"secondary"} onClick={() => setTotalApplications(0)}>{totalApplications ==0 ? <Check color="green" size={20} />:<X color="red" size={20} />}No limit</Button>
                 </div>
               </div>
             </div>
@@ -294,7 +302,7 @@ export default function AddJob({ setData }: { setData: React.Dispatch<React.SetS
 
           <Progress value={progress} className="" />
           <DialogFooter>
-            <Button type="submit" className="w-full">Legg til jobb</Button>
+            <Button type="submit" className="w-full">Add Job</Button>
           </DialogFooter>
         </form>
       </DialogContent>
