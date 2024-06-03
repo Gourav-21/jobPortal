@@ -28,7 +28,7 @@ export default function Post({ item, setData, admin }: { item: Job, setData: Rea
   const [name, setName] = useState("");
   const [phone, setPhone] = useState<number | undefined>();
   const [open, setOpen] = useState(false);
-  const [over, setOver] = useState<boolean>(item.totalApplications==0? false : item.applicationsSubmitted >= item.totalApplications);
+  const [over, setOver] = useState<boolean>(item.totalApplications == 0 ? false : item.applicationsSubmitted >= item.totalApplications);
 
 
 
@@ -128,7 +128,7 @@ export default function Post({ item, setData, admin }: { item: Job, setData: Rea
           setOver(true)
         }
         setOpen(false)
-     
+
         setFile(null)
         setProgress(0)
       })
@@ -140,7 +140,7 @@ export default function Post({ item, setData, admin }: { item: Job, setData: Rea
         })
         console.error('Error sending email:', error);
       });
-    
+
 
   }
 
@@ -170,89 +170,91 @@ export default function Post({ item, setData, admin }: { item: Job, setData: Rea
               <div>
                 {item.positionsAvailable}/{item.totalPositions} Positions Available
               </div>
-             {over==false? <div>
-                {item.applicationsSubmitted}{item.totalApplications==0? "":`${"/"+item.totalApplications}`} Applications submitted
-              </div>: <div className="text-red-600 inline-flex gap-2"><CircleX color="red" size={20} />Applications Closed</div>}
+              {over == false ? <div>
+                {item.applicationsSubmitted}{item.totalApplications == 0 ? "" : `${"/" + item.totalApplications}`} Applications submitted
+              </div> : <div className="text-red-600 inline-flex gap-2"><CircleX color="red" size={20} />Applications Closed</div>}
             </div>
 
           </div>
         </div>
       </DialogTrigger>
-      {!submitted && !over && <DialogContent className="md:min-w-[800px] ">
-        <div className="grid grid-cols-6 md:grid-cols-12 gap-3 h-full">
+      {!submitted && !over && <DialogContent className="md:min-w-[800px] h-full md:h-max">
+        <ScrollArea className="h-full">
+          <div className="grid grid-cols-6 md:grid-cols-12 gap-3 h-full">
 
-          <div className="col-span-6 h-full flex flex-col gap-3">
-            <div className="w-full grid gap-1 grid-cols-4">
-              <div className="flex col-span-1 justify-center items-center w-20 h-20  bg-purple-700">
-                {item.logo?.length > 1 ? <img src={item.logo} alt="" className="w-full h-full object-cover" /> : <Building2 color="white" size={30} />}
+            <div className="col-span-6 h-full flex flex-col gap-3">
+              <div className="w-full grid gap-1 grid-cols-4">
+                <div className="flex col-span-1 justify-center items-center w-20 h-20  bg-purple-700">
+                  {item.logo?.length > 1 ? <img src={item.logo} alt="" className="w-full h-full object-cover" /> : <Building2 color="white" size={30} />}
+                </div>
+                <div className="text-3xl text-wrap h-full col-span-3 capitalize font-semibold text-purple-900 flex items-center ">
+                  {item.company}
+                </div>
               </div>
-              <div className="text-3xl text-wrap h-full col-span-3 capitalize font-semibold text-purple-900 flex items-center ">
-                {item.company}
+              <div className="text-xl font-semibold text-purple-700 " >{item.title}</div>
+
+              <ScrollArea className="text-sm text-gray-600 h-52" >
+                <CardDescription className="whitespace-pre-line">{item.description}</CardDescription>
+              </ScrollArea>
+
+              <div className="flex flex-col justify-between  text-sm text-purple-800 gap-3 font-semibold mt-auto">
+                <div onClick={handleLocationClick} className="inline-flex gap-1 cursor-pointer">
+                  <MapPin />{item.location}
+                </div>
+                <div className="flex gap-3 ">
+
+                  <a href={`tel:${item.phone}`} className="inline-flex gap-1">
+                    <Phone />{item.phone}
+                  </a>
+
+
+                  <a href={`mailto:${item.to_email}`} className="inline-flex gap-1">
+                    <Mail />{item.to_email}
+                  </a>
+
+                </div>
               </div>
+
             </div>
-            <div className="text-xl font-semibold text-purple-700 " >{item.title}</div>
+            <div className="col-span-6">
+              <form onSubmit={submit}>
+                <div className="grid w-full items-center gap-4">
+                  <div className="flex flex-col space-y-1.5">
+                    <Label htmlFor="name">Name</Label>
+                    <Input id="name" value={name} onChange={(e) => setName(e.target.value)} type="text" required placeholder="Name " />
+                  </div>
+                  <div className="flex flex-col space-y-1.5">
+                    <Label htmlFor="email">Email</Label>
+                    <Input id="email" value={email} onChange={(e) => setEmail(e.target.value)} type="email" required placeholder="Email " />
+                  </div>
+                  <div className="flex flex-col space-y-1.5">
+                    <Label htmlFor="phone">Phone</Label>
+                    <Input id="phone" value={phone} onChange={(e) => setPhone(Number(e.target.value))} type="number" required placeholder="Phone " />
+                  </div>
+                  <div className="flex flex-col space-y-1.5">
+                    <Label htmlFor="about yourself">About yourself</Label>
+                    <Textarea id="about yourself" value={text} onChange={(e) => setText(e.target.value)} required placeholder="about yourself " />
+                  </div>
+                  <div className="flex flex-col space-y-1.5">
+                    <Label htmlFor="resume">Attach Resume</Label>
+                    <Input id="resume" type="file" onChange={handleFileChange} accept="application/pdf" required placeholder="Resume" />
+                  </div>
+                  {progress > 0 && <Progress value={progress} className="" />}
+                  <div className="flex justify-between ">
+                    <DialogClose asChild>
+                      <Button type="button" variant="secondary" className="mr-auto">
+                        Cancel
+                      </Button>
+                    </DialogClose>
+                    <Button className="bg-purple-700 text-white w-full ml-2 " >Submit</Button>
 
-            <ScrollArea className="text-sm text-gray-600 h-52" >
-              <CardDescription className="whitespace-pre-line">{item.description}</CardDescription>
-            </ScrollArea>
+                  </div>
+                </div>
 
-            <div className="flex flex-col justify-between  text-sm text-purple-800 gap-3 font-semibold mt-auto">
-              <div onClick={handleLocationClick} className="inline-flex gap-1 cursor-pointer">
-                <MapPin />{item.location}
-              </div>
-              <div className="flex gap-3 ">
-
-                <a href={`tel:${item.phone}`} className="inline-flex gap-1">
-                  <Phone />{item.phone}
-                </a>
-
-
-                <a href={`mailto:${item.to_email}`} className="inline-flex gap-1">
-                  <Mail />{item.to_email}
-                </a>
-
-              </div>
+              </form>
             </div>
-
           </div>
-          <div className="col-span-6">
-            <form onSubmit={submit}>
-              <div className="grid w-full items-center gap-4">
-                <div className="flex flex-col space-y-1.5">
-                  <Label htmlFor="name">Name</Label>
-                  <Input id="name" value={name} onChange={(e) => setName(e.target.value)} type="text" required placeholder="Name " />
-                </div>
-                <div className="flex flex-col space-y-1.5">
-                  <Label htmlFor="email">Email</Label>
-                  <Input id="email" value={email} onChange={(e) => setEmail(e.target.value)} type="email" required placeholder="Email " />
-                </div>
-                <div className="flex flex-col space-y-1.5">
-                  <Label htmlFor="phone">Phone</Label>
-                  <Input id="phone" value={phone} onChange={(e) => setPhone(Number(e.target.value))} type="number" required placeholder="Phone " />
-                </div>
-                <div className="flex flex-col space-y-1.5">
-                  <Label htmlFor="about yourself">About yourself</Label>
-                  <Textarea id="about yourself" value={text} onChange={(e) => setText(e.target.value)} required placeholder="about yourself " />
-                </div>
-                <div className="flex flex-col space-y-1.5">
-                  <Label htmlFor="resume">Attach Resume</Label>
-                  <Input id="resume" type="file" onChange={handleFileChange} accept="application/pdf" required placeholder="Resume" />
-                </div>
-                {progress > 0 && <Progress value={progress} className="" />}
-                <div className="flex justify-between ">
-                  <DialogClose asChild>
-                    <Button type="button" variant="secondary" className="mr-auto">
-                      Cancel
-                    </Button>
-                  </DialogClose>
-                  <Button className="bg-purple-700 text-white w-full ml-2 " >Submit</Button>
-
-                </div>
-              </div>
-
-            </form>
-          </div>
-        </div>
+        </ScrollArea>
 
       </DialogContent>
       }
