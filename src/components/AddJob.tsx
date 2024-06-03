@@ -158,13 +158,13 @@ export default function AddJob({ setData }: { setData: React.Dispatch<React.SetS
   return (
     <Dialog onOpenChange={setOpen} open={open}>
       <DialogTrigger asChild>
-        <Button variant="outline" className="inline-flex items-center gap-2">legge til jobb <LockOpen size={20} /></Button>
+        <Button variant="outline" className="inline-flex items-center gap-2">legg til jobb <LockOpen size={20} /></Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[825px]">
         <DialogHeader>
           <DialogTitle> Legg til ny stilling </DialogTitle>
           <DialogDescription>
-          Skriv inn jobbdetaljene dine nedenfor for å legge til jobblisten.
+          Skriv inn jobbdetaljene dine nedenfor for å legg til jobblisten.
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={add} className="grid grid-cols-1 gap-4">
