@@ -24,36 +24,36 @@ export default function Login({ setAdmin }: { setAdmin: (arg0: boolean) => void 
     if (email === "admin" && password === "admin") {
       setAdmin(true)
     } else {
-      alert("Ugyldige legitimasjon")
+      alert("Invalid credentials")
     }
   }
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="outline" className=" inline-flex gap-2" >legge til jobb <Lock size={20} /></Button>
+        <Button variant="outline" className=" inline-flex gap-2" >Add Job <Lock size={20} /></Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader className="flex items-center justify-between">
             <img src="https://instacallas.no/wp-content/uploads/2024/03/cropped-cropped-instacall-logo-1.png" alt="instacall" className="object-scale-down h-12 w-12" />
 
-          <DialogTitle> Admin pålogging </DialogTitle>
-          <DialogDescription className="text-center">
-          Hei! Er du arbeidsgiver, administrator eller en del av Instacall-teamet som ønsker å legge ut stillinger for andre å søke på? Oppgi admin-informasjonen din, så kan du gjøre det
+          <DialogTitle> Admin Login </DialogTitle>
+          <DialogDescription>
+            Enter your email below to login to your account.
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={login}>
           <div className="grid gap-4 py-4">
             <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="email">brukernavn</Label>
+              <Label htmlFor="email">Username</Label>
               <Input className="col-span-3" id="email" type="text" onChange={e => setEmail(e.target.value)} value={email} placeholder="m@example.com" required />
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="password">passord</Label>
+              <Label htmlFor="password">Password</Label>
               <Input className="col-span-3" id="password" onChange={e => setPassword(e.target.value)} value={password} type="password" required />
             </div>
           </div>
           <DialogFooter>
-            <Button className="w-full">Logg inn</Button>
+            <Button className="w-full">Sign in</Button>
           </DialogFooter>
         </form>
       </DialogContent>
