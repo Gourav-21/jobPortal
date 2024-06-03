@@ -38,7 +38,7 @@ export default function Post({ item, setData, admin }: { item: Job, setData: Rea
         toast({
           variant: "destructive",
           title: "Uh oh!",
-          description: "You can only upload one file at a time.",
+          description: "Du kan bare laste opp én fil om gangen.",
         })
         setFile(null);
         return
@@ -47,7 +47,7 @@ export default function Post({ item, setData, admin }: { item: Job, setData: Rea
         toast({
           variant: "destructive",
           title: "Uh oh!",
-          description: "Your file should be less than 5MB",
+          description: "Filen din skal være mindre enn 5 MB",
         })
         setFile(null);
         return
@@ -115,8 +115,8 @@ export default function Post({ item, setData, admin }: { item: Job, setData: Rea
       .then((result) => {
         console.log(result.text);
         toast({
-          title: "Success!",
-          description: "Your application has been submitted successfully.",
+          title: "Suksess!",
+          description: "Søknaden din er sendt inn.",
         })
         setDoc(doc(db, "posts", item.id), {
           ...item, applicationsSubmitted: item?.applicationsSubmitted + 1
@@ -161,18 +161,18 @@ export default function Post({ item, setData, admin }: { item: Job, setData: Rea
             <div className="flex justify-between ">
               <h1 className="text-xl font-semibold text-purple-700 truncate" >{item?.title?.length > 50 ? item.title?.substring(0, 50) + "..." : item.title}</h1>
               {submitted && <div className={`text-sm text-green-600 font-semibold inline-flex gap-2  ${admin == true && "mr-16 mt-1"}`}>
-                <CircleCheckBig color="green" size={20} /> Application Submitted
+                <CircleCheckBig color="green" size={20} /> Søknad sendt inn
               </div>}
             </div>
             <p className="text-sm text-gray-600 font-semibold" >{item?.description?.length > 70 ? item?.description?.substring(0, 70) + "..." : item.description}</p>
 
             <div className="flex justify-between text-sm text-purple-800 font-semibold">
               <div>
-                {item.positionsAvailable}/{item.totalPositions} Positions Available
+                {item.positionsAvailable}/{item.totalPositions} Stillinger tilgjengelig
               </div>
              {over==false? <div>
-                {item.applicationsSubmitted}{item.totalApplications==0? "":`${"/"+item.totalApplications}`} Applications submitted
-              </div>: <div className="text-red-600 inline-flex gap-2"><CircleX color="red" size={20} />Applications Closed</div>}
+                {item.applicationsSubmitted}{item.totalApplications==0? "":`${"/"+item.totalApplications}`} Søknader sendt inn
+              </div>: <div className="text-red-600 inline-flex gap-2"><CircleX color="red" size={20} />Søknader stengt</div>}
             </div>
 
           </div>
@@ -219,33 +219,33 @@ export default function Post({ item, setData, admin }: { item: Job, setData: Rea
             <form onSubmit={submit}>
               <div className="grid w-full items-center gap-4">
                 <div className="flex flex-col space-y-1.5">
-                  <Label htmlFor="name">Name</Label>
-                  <Input id="name" value={name} onChange={(e) => setName(e.target.value)} type="text" required placeholder="Name " />
+                  <Label htmlFor="name">Navn</Label>
+                  <Input id="name" value={name} onChange={(e) => setName(e.target.value)} type="text" required placeholder="Navn " />
                 </div>
                 <div className="flex flex-col space-y-1.5">
                   <Label htmlFor="email">Email</Label>
                   <Input id="email" value={email} onChange={(e) => setEmail(e.target.value)} type="email" required placeholder="Email " />
                 </div>
                 <div className="flex flex-col space-y-1.5">
-                  <Label htmlFor="phone">Phone</Label>
-                  <Input id="phone" value={phone} onChange={(e) => setPhone(Number(e.target.value))} type="number" required placeholder="Phone " />
+                  <Label htmlFor="phone">Telefon</Label>
+                  <Input id="phone" value={phone} onChange={(e) => setPhone(Number(e.target.value))} type="number" required placeholder="Telefon " />
                 </div>
                 <div className="flex flex-col space-y-1.5">
-                  <Label htmlFor="about yourself">About yourself</Label>
-                  <Textarea id="about yourself" value={text} onChange={(e) => setText(e.target.value)} required placeholder="about yourself " />
+                  <Label htmlFor="about yourself">Om deg selv</Label>
+                  <Textarea id="about yourself" value={text} onChange={(e) => setText(e.target.value)} required placeholder="Om deg selv " />
                 </div>
                 <div className="flex flex-col space-y-1.5">
-                  <Label htmlFor="resume">Attach Resume</Label>
-                  <Input id="resume" type="file" onChange={handleFileChange} accept="application/pdf" required placeholder="Resume" />
+                  <Label htmlFor="resume">Legg ved CV</Label>
+                  <Input id="resume" type="file" onChange={handleFileChange} accept="application/pdf" required placeholder="cv" />
                 </div>
                 {progress > 0 && <Progress value={progress} className="" />}
                 <div className="flex justify-between ">
                   <DialogClose asChild>
                     <Button type="button" variant="secondary" className="mr-auto">
-                      Cancel
+                    Avbryt
                     </Button>
                   </DialogClose>
-                  <Button className="bg-purple-700 text-white w-full ml-2 " >Submit</Button>
+                  <Button className="bg-purple-700 text-white w-full ml-2 " >Sende inn</Button>
 
                 </div>
               </div>
