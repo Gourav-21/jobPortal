@@ -12,6 +12,8 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { Lock } from "lucide-react"
+import { collection, getDocs, query, where } from "firebase/firestore"
+import { db } from "@/lib/firebase"
 
 
 
@@ -19,14 +21,24 @@ export default function Login({ setAdmin }: { setAdmin: (arg0: boolean) => void 
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
 
-  function login(e: React.FormEvent<HTMLFormElement>) {
+  async function login(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
-    if (email === "admin" && password === "admin") {
-      setAdmin(true)
+
+    const q = query(collection(db, "admins"), where("username", "==", email));
+
+    const querySnapshot = await getDocs(q);
+    if (!querySnapshot.empty) {
+      const adminData = querySnapshot.docs[0].data();
+      if (email === adminData?.username && password === adminData?.password) {
+        setAdmin(true)
+      } else {
+        alert("Ugyldige legitimasjon")
+      }
     } else {
       alert("Ugyldige legitimasjon")
     }
   }
+
   return (
     <Dialog>
       <DialogTrigger asChild>
