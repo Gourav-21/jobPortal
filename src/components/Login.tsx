@@ -12,21 +12,32 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { Lock } from "lucide-react"
-
+import { collection, getDocs, query, where } from "firebase/firestore"
+import { db } from "@/lib/firebase"
 
 
 export default function Login({ setAdmin }: { setAdmin: (arg0: boolean) => void }) {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
 
-  function login(e: React.FormEvent<HTMLFormElement>) {
+  async function login(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
-    if (email === "admin" && password === "admin") {
-      setAdmin(true)
+
+    const q = query(collection(db, "admins"), where("username", "==", email));
+
+    const querySnapshot = await getDocs(q);
+    if (!querySnapshot.empty) {
+      const adminData = querySnapshot.docs[0].data();
+      if (email === adminData?.username && password === adminData?.password) {
+        setAdmin(true)
+      } else {
+        alert("Invalid credentials")
+      }
     } else {
       alert("Invalid credentials")
     }
   }
+  
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -34,7 +45,7 @@ export default function Login({ setAdmin }: { setAdmin: (arg0: boolean) => void 
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader className="flex items-center justify-between">
-            <img src="https://instacallas.no/wp-content/uploads/2024/03/cropped-cropped-instacall-logo-1.png" alt="instacall" className="object-scale-down h-12 w-12" />
+          <img src="https://instacallas.no/wp-content/uploads/2024/03/cropped-cropped-instacall-logo-1.png" alt="instacall" className="object-scale-down h-12 w-12" />
 
           <DialogTitle> Admin Login </DialogTitle>
           <DialogDescription>
