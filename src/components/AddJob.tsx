@@ -19,6 +19,7 @@ import { db, storage } from "@/lib/firebase"
 import { Job } from "@/App"
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { Progress } from "./ui/progress"
+import { ScrollArea } from "./ui/scroll-area"
 
 export default function AddJob({ setData }: { setData: React.Dispatch<React.SetStateAction<Job[]>> }) {
   const [open, setOpen] = useState(false)
@@ -168,15 +169,17 @@ export default function AddJob({ setData }: { setData: React.Dispatch<React.SetS
       <DialogTrigger asChild>
         <Button variant="outline" className="inline-flex items-center gap-2">Add job <LockOpen size={20} /></Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[825px]">
+      <DialogContent className="sm:max-w-[825px] h-full sm:h-max ">
+      <ScrollArea className="h-full">
+
         <DialogHeader>
           <DialogTitle> Add New Job Post </DialogTitle>
           <DialogDescription>
             Enter your job details below to add to the job list.
           </DialogDescription>
         </DialogHeader>
-        <form onSubmit={add} className="grid grid-cols-1 gap-4">
-          <div className="grid grid-cols-2 items-center gap-4">
+        <form onSubmit={add} className="grid mt-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 items-center gap-4">
 
 
             <div className="grid cols-span-4 items-center gap-4">
@@ -244,6 +247,7 @@ export default function AddJob({ setData }: { setData: React.Dispatch<React.SetS
               </div>
 
             </div>
+
             <div className="grid cols-span-4 items-center gap-4">
 
               <div className="grid grid-cols-4 items-center gap-4">
@@ -305,6 +309,8 @@ export default function AddJob({ setData }: { setData: React.Dispatch<React.SetS
             <Button type="submit" className="w-full">Add Job</Button>
           </DialogFooter>
         </form>
+      </ScrollArea>
+
       </DialogContent>
     </Dialog>
   )

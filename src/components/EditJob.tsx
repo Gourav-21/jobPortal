@@ -22,6 +22,7 @@ import { FilePenLine } from "lucide-react"
 import { Textarea } from "./ui/textarea"
 import { doc, setDoc } from "firebase/firestore"
 import { db } from "@/lib/firebase"
+import { ScrollArea } from "./ui/scroll-area";
 
 
 export default function EditJob({ item, setData }: { item: Job, setData: React.Dispatch<React.SetStateAction<Job[]>> }) {
@@ -162,15 +163,17 @@ export default function EditJob({ item, setData }: { item: Job, setData: React.D
       <DialogTrigger asChild>
         <FilePenLine className="hover:text-green-700 h-5 w-5" />
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[825px]">
+      <DialogContent className="sm:max-w-[825px] h-full sm:h-max ">
+      <ScrollArea className="h-full">
+
         <DialogHeader>
           <DialogTitle> Edit Job Post  </DialogTitle>
           <DialogDescription>
             Edit the job post below
           </DialogDescription>
         </DialogHeader>
-        <form onSubmit={add} className="grid grid-cols-1 gap-4">
-          <div className="grid grid-cols-2 items-center gap-4">
+        <form onSubmit={add} className="grid mt-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 items-center gap-4">
 
 
             <div className="grid cols-span-4 items-center gap-4">
@@ -315,6 +318,8 @@ export default function EditJob({ item, setData }: { item: Job, setData: React.D
             <Button type="submit" className="w-full">Edit Job</Button>
           </DialogFooter>
         </form>
+      </ScrollArea>
+
       </DialogContent>
     </Dialog>
   )

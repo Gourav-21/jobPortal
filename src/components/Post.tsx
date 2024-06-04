@@ -154,25 +154,38 @@ export default function Post({ item, setData, admin }: { item: Job, setData: Rea
     <Dialog open={open} onOpenChange={setOpen} >
       <DialogTrigger className={`text-left hover:bg-muted mb-3 p-2 rounded-md w-full ${submitted && "bg-green-100 hover:bg-green-50 text-white cursor-not-allowed"} ${over == true ? "cursor-not-allowed bg-muted" : ""} `}>
         <div className="flex gap-3 w-full text-bold">
-          <div className=" flex justify-center items-center  w-20 h-20 bg-purple-700">
+
+          <div className=" flex justify-center items-center w-14 h-14  md:w-20 md:h-20 bg-purple-700">
             {item.logo?.length > 1 ? <img src={item.logo} alt="" className="w-full h-full object-cover" /> : <Building2 color="white" size={30} />}
           </div>
-          <div className="flex flex-col flex-1  gap-2 relative">
-            <div className="flex justify-between ">
-              <h1 className="text-xl font-semibold text-purple-700 truncate" >{item?.title?.length > 50 ? item.title?.substring(0, 50) + "..." : item.title}</h1>
-              {submitted && <div className={`text-sm text-green-600 font-semibold inline-flex gap-2  ${admin == true && "mr-16 mt-1"}`}>
-                <CircleCheckBig color="green" size={20} /> Application Submitted
+
+          <div className="flex flex-col grow w-10  gap-2 relative">
+            <div className="flex justify-between text-nowrap">
+              <h1 className="text-lg md:text-xl font-semibold text-purple-700 truncate" >{item.title}</h1>
+              {submitted && <div className={`text-xs md:text-sm text-green-600 font-semibold   ${admin == true && "mr-16 mt-1"}`}>
+                <div className="md:hidden inline-flex items-center gap-2">
+                  <CircleCheckBig color="green" size={20} /> Submitted
+                </div>
+                <div className="hidden md:inline-flex gap-2">
+                  <CircleCheckBig color="green" size={20} /> Application Submitted
+                </div>
               </div>}
             </div>
-            <p className="text-sm text-gray-600 font-semibold" >{item?.description?.length > 70 ? item?.description?.substring(0, 70) + "..." : item.description}</p>
 
-            <div className="flex justify-between text-sm text-purple-800 font-semibold">
+            <p className="text-xs md:text-sm text-gray-600 font-semibold line-clamp-2 md:line-clamp-1 md:w-5/6 " >{item.description}</p>
+
+            <div className="flex justify-between gap-1 text-xs md:text-sm text-purple-800 font-semibold">
               <div>
                 {item.positionsAvailable}/{item.totalPositions} Positions Available
               </div>
               {over == false ? <div>
                 {item.applicationsSubmitted}{item.totalApplications == 0 ? "" : `${"/" + item.totalApplications}`} Applications submitted
-              </div> : <div className="text-red-600 inline-flex gap-2"><CircleX color="red" size={20} />Applications Closed</div>}
+              </div> : 
+              <>
+              <div className="text-red-600 md:hidden inline-flex items-center gap-2"><CircleX color="red" size={20} />Closed</div>
+              <div className="text-red-600 hidden md:inline-flex gap-2"><CircleX color="red" size={20} />Applications Closed</div>
+              </>
+              }
             </div>
 
           </div>

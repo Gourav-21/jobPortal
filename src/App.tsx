@@ -77,16 +77,30 @@ export default function App() {
 
   return (
     <div className="flex flex-col items-center justify-center h-screen">
-      <div className="w-1/2 h-1/2">
+      <div className="w-full md:w-4/5 lg:w-3/4 xl:w-2/4 h-2/3">
 
-        <div className=" mb-2">
+        <div className="mb-2 ml-2 md:ml-0">
           {!admin && <Login setAdmin={setAdmin} />}
           {admin && <AddJob setData={setData} />}
         </div>
-        <ScrollArea className=" rounded-md border p-4 h-[400px]">
+        <ScrollArea className=" rounded-md border p-4 h-[550px] md:h-[400px]">
           {data.length === 0 && <div className="text-center m-5" >No jobs found</div>}
 
           <div className="overflow-auto flex flex-col justify-items-stretch gap-3" >
+            {data.map((item) => {
+              return (
+                <div className="relative" key={`${item.id}`}>
+
+                  {admin && <div className="flex gap-2 absolute top-4 right-4 z-50">
+                    <EditJob item={item} setData={setData} />
+                    <Trash2 onClick={() => deleteJob(item.id)} className="hover:text-red-700 h-5 w-5" />
+                  </div>}
+
+                  <Post item={item} admin={admin} setData={setData}/>
+                  <Separator className="" />
+                </div>
+              )
+            })}
             {data.map((item) => {
               return (
                 <div className="relative" key={`${item.id}`}>
