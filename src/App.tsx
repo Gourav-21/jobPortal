@@ -42,7 +42,7 @@ export default function App() {
     } catch (error) {
       toast({
         variant: "destructive",
-        title: "Uh oh! Something went wrong.",
+        title: "UH oh! Noe gikk galt.",
         description: "There was a problem with your request.",
       })
     }
@@ -69,7 +69,7 @@ export default function App() {
       console.log(error);
       toast({
         variant: "destructive",
-        title: "Uh oh! Something went wrong.",
+        title: "UH oh! Noe gikk galt.",
         description: "There was a problem with your request.",
       })
     }
@@ -84,7 +84,7 @@ export default function App() {
           {admin && <AddJob setData={setData} />}
         </div>
         <ScrollArea className=" rounded-md border p-4 h-[550px] md:h-[400px]">
-          {data.length === 0 && <div className="text-center m-5" >No jobs found</div>}
+          {data.length === 0 && <div className="text-center m-5" >Ingen jobber funnet</div>}
 
           <div className="overflow-auto flex flex-col justify-items-stretch gap-3" >
             {data.map((item) => {

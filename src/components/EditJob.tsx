@@ -69,8 +69,8 @@ export default function EditJob({ item, setData }: { item: Job, setData: React.D
       setProgress(0);
 
       toast({
-        title: "Job edited successfully!",
-        description: "Your job has been edited.",
+        title: "Jobben ble redigert!",
+        description: "Jobben din er redigert.",
       })
 
 
@@ -79,7 +79,7 @@ export default function EditJob({ item, setData }: { item: Job, setData: React.D
 
       toast({
         variant: "destructive",
-        title: "Uh oh! Something went wrong.",
+        title: "UH oh! Noe gikk galt.",
         description: "There was a problem with your request.",
       })
       return
@@ -93,7 +93,7 @@ export default function EditJob({ item, setData }: { item: Job, setData: React.D
         toast({
           variant: "destructive",
           title: "Uh oh!",
-          description: "You can only upload one file at a time.",
+          description: "Du kan bare laste opp én fil om gangen.",
         })
         setFile(null);
         return
@@ -102,7 +102,7 @@ export default function EditJob({ item, setData }: { item: Job, setData: React.D
         toast({
           variant: "destructive",
           title: "Uh oh!",
-          description: "Your file should be less than 5MB",
+          description: "Filen din skal være mindre enn 5 MB",
         })
         setFile(null);
         return
@@ -167,9 +167,9 @@ export default function EditJob({ item, setData }: { item: Job, setData: React.D
       <ScrollArea className="h-full">
 
         <DialogHeader>
-          <DialogTitle> Edit Job Post  </DialogTitle>
+          <DialogTitle> Rediger stillingsinnlegg  </DialogTitle>
           <DialogDescription>
-            Edit the job post below
+          Rediger stillingsposten nedenfor
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={add} className="grid mt-3 gap-4">
@@ -193,35 +193,35 @@ export default function EditJob({ item, setData }: { item: Job, setData: React.D
                   <div className="flex gap-2">
 
                     <Input id="logo" className="col-span-3" type="file" onChange={handleFileChange} accept="image/png, image/jpeg" placeholder="logo " />
-                    {file && <Button type="button" onClick={() => setFile(null)}>Remove</Button>}
-                    {logo?.length > 1 && file == null && <Button type="button" onClick={() => setLogo("")}>Remove</Button>}
+                    {file && <Button type="button" onClick={() => setFile(null)}>Fjerne</Button>}
+                    {logo?.length > 1 && file == null && <Button type="button" onClick={() => setLogo("")}>Fjerne</Button>}
                   </div>
                 </div>
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="company">Company</Label>
+                <Label htmlFor="company">Selskap</Label>
                 <Input
                   className="col-span-3"
                   id="company"
                   value={company}
                   onChange={e => setCompany(e.target.value)}
-                  placeholder="Company"
+                  placeholder="Selskap"
                   required
                 />
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="location">location</Label>
+                <Label htmlFor="location">plassering</Label>
                 <Input
                   className="col-span-3"
                   id="location"
                   value={location}
                   onChange={e => setLocation(e.target.value)}
-                  placeholder="location"
+                  placeholder="plassering"
                   required
                 />
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="phone">phone</Label>
+                <Label htmlFor="phone">telefon</Label>
                 <Input
                   className="col-span-3"
                   id="phone"
@@ -248,30 +248,30 @@ export default function EditJob({ item, setData }: { item: Job, setData: React.D
             <div className="grid cols-span-4 items-center gap-4">
 
               <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="title">Title</Label>
+                <Label htmlFor="title">Tittel</Label>
                 <Input
                   className="col-span-3"
                   id="title"
                   value={title}
                   onChange={e => setTitle(e.target.value)}
-                  placeholder="Job title"
+                  placeholder="Jobbtittel"
                   required
                 />
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="description">Description</Label>
+                <Label htmlFor="description">Beskrivelse</Label>
                 <Textarea
                   className="col-span-3"
                   id="description"
                   rows={6}
                   value={description}
                   onChange={e => setDescription(e.target.value)}
-                  placeholder="A job description goes here"
+                  placeholder="stillingsbeskrivelsen kommer her"
                   required
                 />
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="totalPositions">Total Positions</Label>
+                <Label htmlFor="totalPositions">Totalt antall stillinger</Label>
                 <Input
                   className="col-span-3"
                   id="totalPositions"
@@ -283,7 +283,7 @@ export default function EditJob({ item, setData }: { item: Job, setData: React.D
                 />
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="totalPositions">Positions Available</Label>
+                <Label htmlFor="totalPositions">Stillinger tilgjengelig</Label>
                 <Input
                   className="col-span-3"
                   id="totalPositions"
@@ -295,7 +295,7 @@ export default function EditJob({ item, setData }: { item: Job, setData: React.D
                 />
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="Total Applications">Total Applications</Label>
+                <Label htmlFor="Total Applications">Totalt antall søknader</Label>
                 <div className="flex gap-2 w-full col-span-3">
 
                   <Input
@@ -306,7 +306,7 @@ export default function EditJob({ item, setData }: { item: Job, setData: React.D
                     onChange={(e) => setTotalApplications(Number(e.target.value))}
                     required
                   />
-                  <Button type="button" className="inline-flex gap-2" variant={"secondary"} onClick={() => setTotalApplications(0)}>{totalApplications == 0 ? <Check color="green" size={20} /> : <X color="red" size={20} />}No limit</Button>
+                  <Button type="button" className="inline-flex gap-2" variant={"secondary"} onClick={() => setTotalApplications(0)}>{totalApplications == 0 ? <Check color="green" size={20} /> : <X color="red" size={20} />}Ingen grense</Button>
                 </div>
               </div>
             </div>
@@ -315,7 +315,7 @@ export default function EditJob({ item, setData }: { item: Job, setData: React.D
 
           {progress > 0 && <Progress value={progress} className="" />}
           <DialogFooter>
-            <Button type="submit" className="w-full">Edit Job</Button>
+            <Button type="submit" className="w-full">Rediger jobb</Button>
           </DialogFooter>
         </form>
       </ScrollArea>
