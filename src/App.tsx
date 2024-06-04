@@ -101,20 +101,6 @@ export default function App() {
                 </div>
               )
             })}
-            {data.map((item) => {
-              return (
-                <div className="relative" key={`${item.id}`}>
-
-                  {admin && <div className="flex gap-2 absolute top-4 right-4 z-50">
-                    <EditJob item={item} setData={setData} />
-                    <Trash2 onClick={() => deleteJob(item.id)} className="hover:text-red-700 h-5 w-5" />
-                  </div>}
-
-                  <Post item={item} admin={admin} setData={setData}/>
-                  <Separator className="" />
-                </div>
-              )
-            })}
           </div>
         </ScrollArea>
       </div>
