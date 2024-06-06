@@ -107,11 +107,11 @@ export default function Post({ item, setData, admin }: { item: Job, setData: Rea
     e.preventDefault();
     const resume = await handleUpload()
 
-    emailjs.send("service_f0hbws8", "template_5h4l1dl", {
+    emailjs.send("service_5yqm18k", "template_6kkp57i", {
       title: item.title,
       to_email: item.to_email,
       name, email, phone, link: resume, about_yourself: text
-    }, "2OrzLXsspxRe5a38n")
+    }, "Ir-YjhpxWCxJ8yqh_")
       .then((result) => {
         console.log(result.text);
         toast({
