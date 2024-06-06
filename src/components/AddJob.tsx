@@ -20,6 +20,7 @@ import { Job } from "@/App"
 import { ref,  getDownloadURL, uploadBytes } from "firebase/storage";
 import { Progress } from "./ui/progress"
 import { ScrollArea } from "./ui/scroll-area"
+import { v4 } from "uuid"
 
 export default function AddJob({ setData }: { setData: React.Dispatch<React.SetStateAction<Job[]>> }) {
   const [open, setOpen] = useState(false)
@@ -124,7 +125,7 @@ export default function AddJob({ setData }: { setData: React.Dispatch<React.SetS
     }
     setProgress(10);
 
-    const storageRef = ref(storage, `logo/${file?.name}`);
+    const storageRef = ref(storage, `logo/${file?.name + v4()}`);
     await uploadBytes(storageRef, file);
     setProgress(50);
 

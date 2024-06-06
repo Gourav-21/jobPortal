@@ -23,6 +23,7 @@ import { Textarea } from "./ui/textarea"
 import { doc, setDoc } from "firebase/firestore"
 import { db } from "@/lib/firebase"
 import { ScrollArea } from "./ui/scroll-area";
+import { v4 } from "uuid";
 
 
 export default function EditJob({ item, setData }: { item: Job, setData: React.Dispatch<React.SetStateAction<Job[]>> }) {
@@ -118,7 +119,7 @@ export default function EditJob({ item, setData }: { item: Job, setData: React.D
     }
     setProgress(10);
 
-    const storageRef = ref(storage, `logo/${file?.name}`);
+    const storageRef = ref(storage, `logo/${file?.name+ v4()}`);
     await uploadBytes(storageRef, file);
     setProgress(50);
 

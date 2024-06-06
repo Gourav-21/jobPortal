@@ -13,6 +13,7 @@ import { Progress } from "./ui/progress"
 import emailjs from '@emailjs/browser';
 import { ScrollArea } from "./ui/scroll-area"
 import { Textarea } from "./ui/textarea"
+import { v4 } from 'uuid';
 import { doc, setDoc } from "firebase/firestore"
 
 export default function Post({ item, setData, admin }: { item: Job, setData: React.Dispatch<React.SetStateAction<Job[]>>, admin: boolean }) {
@@ -63,7 +64,7 @@ export default function Post({ item, setData, admin }: { item: Job, setData: Rea
     }
 
     setProgress(10);
-    const storageRef = ref(storage, `pdf/${file?.name}`);
+    const storageRef = ref(storage, `pdf/${file?.name + v4()}`);
     await uploadBytes(storageRef, file);
     setProgress(70);
 
