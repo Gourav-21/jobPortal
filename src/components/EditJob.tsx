@@ -1,7 +1,7 @@
 import { ChangeEvent } from "react"
 import { Building2, Check, X } from "lucide-react"
 import { storage } from "@/lib/firebase"
-import { ref, uploadBytesResumable, getDownloadURL, uploadBytes } from "firebase/storage";
+import { ref,  getDownloadURL, uploadBytes } from "firebase/storage";
 import { Progress } from "./ui/progress"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
