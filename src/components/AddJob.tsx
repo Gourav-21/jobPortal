@@ -17,7 +17,7 @@ import { Textarea } from "./ui/textarea"
 import { addDoc, collection } from "firebase/firestore"
 import { db, storage } from "@/lib/firebase"
 import { Job } from "@/App"
-import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
+import { ref, uploadBytesResumable, getDownloadURL, uploadBytes } from "firebase/storage";
 import { Progress } from "./ui/progress"
 import { ScrollArea } from "./ui/scroll-area"
 
@@ -122,46 +122,14 @@ export default function AddJob({ setData }: { setData: React.Dispatch<React.SetS
     if (!file) {
       return logo;
     }
+    setProgress(10);
 
     const storageRef = ref(storage, `logo/${file?.name}`);
-    const uploadTask = uploadBytesResumable(storageRef, file)
+    await uploadBytes(storageRef, file);
+    setProgress(50);
 
-    uploadTask.on('state_changed',
-      (snapshot) => {
-        // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
-        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-        setProgress(progress);
-        console.log('Upload is ' + progress + '% done');
-        switch (snapshot.state) {
-          case 'paused':
-            console.log('Upload is paused');
-            break;
-          case 'running':
-            console.log('Upload is running');
-            break;
-        }
-      },
-      (error) => {
-        // A full list of error codes is available at
-        // https://firebase.google.com/docs/storage/web/handle-errors
-        switch (error.code) {
-          case 'storage/unauthorized':
-            // User doesn't have permission to access the object
-            break;
-          case 'storage/canceled':
-            // User canceled the upload
-            break;
 
-          // ...
-
-          case 'storage/unknown':
-            // Unknown error occurred, inspect error.serverResponse
-            break;
-        }
-      },
-    );
-
-    return await getDownloadURL(uploadTask.snapshot.ref);
+    return await getDownloadURL(storageRef);
   };
 
   return (
@@ -306,7 +274,7 @@ export default function AddJob({ setData }: { setData: React.Dispatch<React.SetS
 
           <Progress value={progress} className="" />
           <DialogFooter>
-            <Button type="submit" className="w-full">Legg til jobb</Button>
+            <Button type="submit" disabled={progress > 0} className="w-full">Legg til jobb</Button>
           </DialogFooter>
         </form>
       </ScrollArea>

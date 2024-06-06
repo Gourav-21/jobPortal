@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button"
 import { CardDescription, } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Dialog, DialogClose, DialogContent, DialogTrigger, } from "@/components/ui/dialog"
-import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
+import { ref, uploadBytesResumable, getDownloadURL, uploadBytes } from "firebase/storage";
 import { Label } from "@/components/ui/label"
 import { ChangeEvent, useState } from "react"
 import { useToast } from "./ui/use-toast"
@@ -62,45 +62,12 @@ export default function Post({ item, setData, admin }: { item: Job, setData: Rea
       return "";
     }
 
+    setProgress(10);
     const storageRef = ref(storage, `pdf/${file?.name}`);
-    const uploadTask = uploadBytesResumable(storageRef, file)
+    await uploadBytes(storageRef, file);
+    setProgress(70);
 
-    uploadTask.on('state_changed',
-      (snapshot) => {
-        // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
-        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-        setProgress(progress);
-        console.log('Upload is ' + progress + '% over');
-        switch (snapshot.state) {
-          case 'paused':
-            console.log('Upload is paused');
-            break;
-          case 'running':
-            console.log('Upload is running');
-            break;
-        }
-      },
-      (error) => {
-        // A full list of error codes is available at
-        // https://firebase.google.com/docs/storage/web/handle-errors
-        switch (error.code) {
-          case 'storage/unauthorized':
-            // User doesn't have permission to access the object
-            break;
-          case 'storage/canceled':
-            // User canceled the upload
-            break;
-
-          // ...
-
-          case 'storage/unknown':
-            // Unknown error occurred, inspect error.serverResponse
-            break;
-        }
-      },
-    );
-    return await getDownloadURL(uploadTask.snapshot.ref);
-
+    return await getDownloadURL(storageRef);
   };
 
   async function submit(e: React.FormEvent<HTMLFormElement>) {
@@ -139,6 +106,7 @@ export default function Post({ item, setData, admin }: { item: Job, setData: Rea
           description: error,
         })
         console.error('Error sending email:', error);
+        setProgress(0)
       });
 
 
@@ -259,7 +227,7 @@ export default function Post({ item, setData, admin }: { item: Job, setData: Rea
                       Avbryt
                       </Button>
                     </DialogClose>
-                    <Button className="bg-purple-700 text-white w-full ml-2 " >Sende inn</Button>
+                    <Button type="submit" disabled={progress > 0} className="bg-purple-700 text-white w-full ml-2 " >Sende inn</Button>
 
                   </div>
                 </div>
