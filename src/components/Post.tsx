@@ -228,7 +228,7 @@ export default function Post({ item, setData, admin }: { item: Job, setData: Rea
                       Avbryt
                       </Button>
                     </DialogClose>
-                    <Button type="submit" disabled={progress > 0} className="bg-purple-700 text-white w-full ml-2 " >Sende inn</Button>
+                    <Button type="submit" disabled={progress > 0} className="bg-purple-700 text-white w-full ml-2 " >Send inn</Button>
 
                   </div>
                 </div>

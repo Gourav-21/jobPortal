@@ -76,8 +76,8 @@ export default function App() {
   }
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen">
-      <div className="w-full md:w-4/5 lg:w-3/4 xl:w-2/4 h-2/3">
+    <div className="flex flex-col items-center justify-center ">
+      <div className="w-full md:w-4/5 lg:w-3/4  h-2/3">
 
         <div className="mb-2 ml-2 md:ml-0">
           {!admin && <Login setAdmin={setAdmin} />}
