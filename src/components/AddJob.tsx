@@ -17,7 +17,7 @@ import { Textarea } from "./ui/textarea"
 import { addDoc, collection } from "firebase/firestore"
 import { db, storage } from "@/lib/firebase"
 import { Job } from "@/App"
-import { ref, uploadBytesResumable, getDownloadURL, uploadBytes } from "firebase/storage";
+import { ref,  getDownloadURL, uploadBytes } from "firebase/storage";
 import { Progress } from "./ui/progress"
 import { ScrollArea } from "./ui/scroll-area"
 

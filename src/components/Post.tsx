@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button"
 import { CardDescription, } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Dialog, DialogClose, DialogContent, DialogTrigger, } from "@/components/ui/dialog"
-import { ref, uploadBytesResumable, getDownloadURL, uploadBytes } from "firebase/storage";
+import { ref,  getDownloadURL, uploadBytes } from "firebase/storage";
 import { Label } from "@/components/ui/label"
 import { ChangeEvent, useState } from "react"
 import { useToast } from "./ui/use-toast"
