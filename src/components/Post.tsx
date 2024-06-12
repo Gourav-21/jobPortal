@@ -75,7 +75,7 @@ export default function Post({ item, setData, admin }: { item: Job, setData: Rea
     e.preventDefault();
     const resume = await handleUpload()
 
-    emailjs.send("service_5yqm18k", "template_6kkp57i", {
+    emailjs.send("service_4001xlg", "template_6kkp57i", {
       title: item.title,
       to_email: item.to_email,
       name, email, phone, link: resume, about_yourself: text
